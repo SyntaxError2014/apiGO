@@ -1,5 +1,9 @@
 package models
 
+import (
+    "apiGO/dbmodels"
+)
+
 type User struct {
 }
 
