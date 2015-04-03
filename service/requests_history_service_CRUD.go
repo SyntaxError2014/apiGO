@@ -5,10 +5,8 @@ import (
     "gopkg.in/mgo.v2/bson"
 )
 
-const RequestHistorysCollectionName = "requests_history"
-
 func CreateRequestHistory(requestHistory *dbmodels.RequestHistory) (*dbmodels.RequestHistory, error) {
-    session, collection := Connect(RequestHistorysCollectionName)
+    session, collection := Connect(RequestsHistoryCollectionName)
     defer session.Close()
 
     if requestHistory.Id == "" {
@@ -21,7 +19,7 @@ func CreateRequestHistory(requestHistory *dbmodels.RequestHistory) (*dbmodels.Re
 }
 
 func UpdateRequestHistory(requestHistory *dbmodels.RequestHistory) error {
-    session, collection := Connect(RequestHistorysCollectionName)
+    session, collection := Connect(RequestsHistoryCollectionName)
     defer session.Close()
 
     err := collection.UpdateId(requestHistory.Id, requestHistory)
@@ -30,7 +28,7 @@ func UpdateRequestHistory(requestHistory *dbmodels.RequestHistory) error {
 }
 
 func DeleteRequestHistory(requestHistoryId bson.ObjectId) error {
-    session, collection := Connect(RequestHistorysCollectionName)
+    session, collection := Connect(RequestsHistoryCollectionName)
     defer session.Close()
 
     err := collection.RemoveId(requestHistoryId)
@@ -39,7 +37,7 @@ func DeleteRequestHistory(requestHistoryId bson.ObjectId) error {
 }
 
 func GetRequestHistory(requestHistoryId bson.ObjectId) (*dbmodels.RequestHistory, error) {
-    session, collection := Connect(RequestHistorysCollectionName)
+    session, collection := Connect(RequestsHistoryCollectionName)
     defer session.Close()
 
     requestHistory := dbmodels.RequestHistory{}
@@ -49,7 +47,7 @@ func GetRequestHistory(requestHistoryId bson.ObjectId) (*dbmodels.RequestHistory
 }
 
 func GetAllRequestHistorys() ([]dbmodels.RequestHistory, error) {
-    session, collection := Connect(RequestHistorysCollectionName)
+    session, collection := Connect(RequestsHistoryCollectionName)
     defer session.Close()
 
     var requestsHistories []dbmodels.RequestHistory
@@ -59,7 +57,7 @@ func GetAllRequestHistorys() ([]dbmodels.RequestHistory, error) {
 }
 
 func GetAllRequestHistorysLimited(limit int) ([]dbmodels.RequestHistory, error) {
-    session, collection := Connect(RequestHistorysCollectionName)
+    session, collection := Connect(RequestsHistoryCollectionName)
     defer session.Close()
 
     var requestsHistories []dbmodels.RequestHistory

@@ -8,6 +8,17 @@ import (
     "strings"
 )
 
+func GetStringValueFromParams(paramName string, reqForm url.Values) (string, error, bool) {
+    value := reqForm.Get(paramName)
+
+    if value == "" {
+        errMsg := []string{"The", paramName, "was not specified"}
+        return "", errors.New(strings.Join(errMsg, " ")), false
+    }
+
+    return value, nil, true
+}
+
 // Gets a parameter from the HTTP request with the specified name and tries to
 // parse it as an integer value, then return it
 func GetIntValueFromParams(paramName string, reqForm url.Values) (int, error, bool) {

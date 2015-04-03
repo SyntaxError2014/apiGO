@@ -5,8 +5,6 @@ import (
     "gopkg.in/mgo.v2/bson"
 )
 
-const EndpointsCollectionName = "endpoints"
-
 func CreateEndpoint(endpoint *dbmodels.Endpoint) (*dbmodels.Endpoint, error) {
     session, collection := Connect(EndpointsCollectionName)
     defer session.Close()

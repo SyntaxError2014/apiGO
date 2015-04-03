@@ -5,8 +5,6 @@ import (
     "gopkg.in/mgo.v2/bson"
 )
 
-const UserSessionsCollectionName = "user_sessions"
-
 func CreateUserSession(userSession *dbmodels.UserSession) (*dbmodels.UserSession, error) {
     session, collection := Connect(UserSessionsCollectionName)
     defer session.Close()
