@@ -2,8 +2,8 @@ package models
 
 import (
     "apiGO/dbmodels"
-    "apiGO/service"
-    "errors"
+    "apiGO/interfaces"
+    "encoding/json"
     "gopkg.in/mgo.v2/bson"
 )
 
@@ -41,5 +41,5 @@ func (user *User) Collapse() (*dbmodels.User, error) {
         Id: user.Id,
     }
 
-    return collapsedUser, nil
+    return &collapsedUser, nil
 }

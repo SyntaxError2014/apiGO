@@ -1,6 +1,8 @@
 package dbmodels
 
 import (
+    "apiGO/interfaces"
+    "encoding/json"
     "gopkg.in/mgo.v2/bson"
 )
 
