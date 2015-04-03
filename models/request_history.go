@@ -68,12 +68,12 @@ func (requestHistory *RequestHistory) Expand(baseRequestHistory dbmodels.Request
     requestHistory.Parameters = baseRequestHistory.Parameters
     requestHistory.Body = baseRequestHistory.Body
 
-    endpoint, err := service.GetRequestHistory(baseRequestHistory.EndpointId)
+    endpoint, err := service.GetEndpoint(baseRequestHistory.EndpointId)
     if err != nil {
         return err
     }
 
-    requestHistory.Endpoint = endpoint
+    requestHistory.Endpoint = *endpoint
 
     return nil
 }

@@ -10,8 +10,6 @@ import (
     "log"
 )
 
-const UsersCollectionName = "users"
-
 // All connections should be stateless, so this method always
 // returns a pointer to a new session. After each session is used,
 // it should be closed in order to dump data from memory correctly.
