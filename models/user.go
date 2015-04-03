@@ -2,6 +2,8 @@ package models
 
 import (
     "apiGO/dbmodels"
+    "apiGO/service"
+    "errors"
     "gopkg.in/mgo.v2/bson"
 )
 
@@ -29,10 +31,15 @@ func (user *User) DeserializeJson(obj []byte) error {
     return nil
 }
 
-func (user *User) Expand(dbmodels.User) error {
+func (user *User) Expand(baseUser dbmodels.User) error {
+    user.Id = baseUser.Id
     return nil
 }
 
 func (user *User) Collapse() (*dbmodels.User, error) {
-    return nil, nil
+    var collapsedUser = dbmodels.User{
+        Id: user.Id,
+    }
+
+    return collapsedUser, nil
 }
