@@ -69,6 +69,7 @@ func (endpoint *Endpoint) DeserializeJson(obj []byte) error {
 
 func (endpoint *Endpoint) Expand(baseEndpoint dbmodels.Endpoint) error {
     endpoint.Id = baseEndpoint.Id
+    endpoint.URLPath = baseEndpoint.URLPath
     endpoint.Name = baseEndpoint.Name
     endpoint.Description = baseEndpoint.Description
     endpoint.Authentication = baseEndpoint.Authentication
@@ -90,6 +91,7 @@ func (endpoint *Endpoint) Expand(baseEndpoint dbmodels.Endpoint) error {
 func (endpoint *Endpoint) Collapse() (*dbmodels.Endpoint, error) {
     var collapsedEndpoint = dbmodels.Endpoint{
         Id:             endpoint.Id,
+        URLPath:        endpoint.URLPath,
         UserId:         endpoint.User.Id,
         Name:           endpoint.Name,
         Description:    endpoint.Description,

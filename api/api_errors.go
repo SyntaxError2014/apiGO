@@ -7,9 +7,13 @@ import (
 // Return a status and message that signals the API client
 // about an 'internal server error' that has occured
 func internalServerError(resp *ApiResponse, msg string) error {
+    if msg == "" {
+        msg = http.StatusText(http.StatusInternalServerError)
+    }
+
     resp.StatusCode = http.StatusInternalServerError
-    resp.Message = []byte(http.StatusText(resp.StatusCode))
-    resp.ErrorMessage = http.StatusText(resp.StatusCode)
+    resp.Message = []byte(msg)
+    resp.ErrorMessage = msg
 
     return nil
 }
@@ -29,6 +33,7 @@ func badRequest(resp *ApiResponse, msg string) error {
 func notFound(resp *ApiResponse, msg string) error {
     resp.StatusCode = http.StatusNotFound
     resp.Message = []byte(msg)
+    resp.ErrorMessage = http.StatusText(http.StatusNotFound)
 
     return nil
 }

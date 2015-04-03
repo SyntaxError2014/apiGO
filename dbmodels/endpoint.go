@@ -10,7 +10,7 @@ type Endpoint struct {
     Id  bson.ObjectId `bson:"_id" json:"id"`
 
     URLPath        string           `bson:"urlPath" json:"urlPath"`
-    UserId         bson.ObjectId    `bson:"userId" json:"userId"`
+    UserId         bson.ObjectId    `bson:"userId,omitempty" json:"userId"`
     Name           string           `bson:"name" json:"name"`
     Description    string           `bson:"description" json:"description"`
     Authentication EndpointAuth     `bson:"authentication" json:"authentication"`

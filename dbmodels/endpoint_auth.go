@@ -5,7 +5,7 @@ import (
 )
 
 type EndpointAuth struct {
-    UserId   bson.ObjectId `bson:"userId" json:"userId"`
+    UserId   bson.ObjectId `bson:"userId,omitempty" json:"userId"`
     Password string        `bson:"password" json:"password"`
 }
 

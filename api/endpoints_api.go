@@ -9,6 +9,7 @@ import (
     "encoding/json"
     "gopkg.in/mgo.v2/bson"
     "net/http"
+    "strings"
 )
 
 func (api *Api) GetEndpoint(vars *ApiVar, resp *ApiResponse) error {
@@ -35,29 +36,31 @@ func (api *Api) GetEndpoint(vars *ApiVar, resp *ApiResponse) error {
 }
 
 func (api *Api) PostEndpoint(vars *ApiVar, resp *ApiResponse) error {
-    expandedEndpoint := &models.Endpoint{}
-
-    err := expandedEndpoint.DeserializeJson(vars.RequestBody)
-    if err != nil {
-        return badRequest(resp, "The entity was not in the correct format")
+    basicEndpoint := &dbmodels.Endpoint{
+        URLPath: strings.Join([]string{"/", bson.NewObjectId().Hex()}, ""),
+        GET:     dbmodels.NewEndpointResponse("GET"),
+        POST:    dbmodels.NewEndpointResponse("POST"),
+        PUT:     dbmodels.NewEndpointResponse("PUT"),
+        DELETE:  dbmodels.NewEndpointResponse("DELETE"),
     }
 
-    if !filter.CheckEndpointIntegrity(expandedEndpoint) {
-        return badRequest(resp, "The entity doesn't comply to the integrity requirements")
-    }
+    basicEndpoint, err := service.CreateEndpoint(basicEndpoint)
 
-    endpoint, err := expandedEndpoint.Collapse()
-    if err != nil {
+    if err != nil || basicEndpoint == nil {
         return internalServerError(resp, err.Error())
     }
 
-    endpoint, err = service.CreateEndpoint(endpoint)
-    if err != nil || endpoint == nil {
-        return internalServerError(resp, "The entity could not be processed")
+    endpoint := &models.Endpoint{}
+    endpoint.Expand(*basicEndpoint)
+
+    endpointJson, err := endpoint.SerializeJson()
+
+    if err != nil || endpointJson == nil {
+        return internalServerError(resp, err.Error())
     }
 
     resp.StatusCode = http.StatusCreated
-    resp.Message, _ = endpoint.SerializeJson()
+    resp.Message = endpointJson
 
     return nil
 }

@@ -10,7 +10,7 @@ import (
 type UserSession struct {
     Id  bson.ObjectId `bson:"_id" json:"id"`
 
-    UserId bson.ObjectId `bson:"userId" json:"userId"`
+    UserId bson.ObjectId `bson:"userId,omitempty" json:"userId"`
     Token  string        `bson:"token" json:"token"`
     Time   time.Time     `bson:"time" json:"time"`
 }

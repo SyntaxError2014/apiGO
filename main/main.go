@@ -22,7 +22,6 @@ func initApplicationConfiguration() {
 
 func initBasicEndpoint() {
     id := bson.ObjectIdHex(basicObjectId)
-    basicEndpoint := dbmodels.NewEndpointResponse()
 
     endpoint, _ := service.GetEndpoint(id)
 
@@ -30,10 +29,10 @@ func initBasicEndpoint() {
         endpoint = &dbmodels.Endpoint{
             Id:      id,
             URLPath: bson.NewObjectId().Hex(),
-            GET:     basicEndpoint,
-            POST:    basicEndpoint,
-            PUT:     basicEndpoint,
-            DELETE:  basicEndpoint,
+            GET:     dbmodels.NewEndpointResponse("GET"),
+            POST:    dbmodels.NewEndpointResponse("POST"),
+            PUT:     dbmodels.NewEndpointResponse("PUT"),
+            DELETE:  dbmodels.NewEndpointResponse("DELETE"),
         }
 
         service.CreateEndpoint(endpoint)
