@@ -13,12 +13,12 @@ import (
 type RequestHistory struct {
     Id  bson.ObjectId `bson:"_id" json:"id"`
 
-    Endpoint   dbmodels.Endpoint `bson:"endpoint" json:"endpoint"`
-    Time       time.Time         `bson:"time" json:"time"`
-    HTTPMethod string            `bson:"httpMethod" json:"httpMethod"`
-    Header     []byte            `bson:"header" json:"header"`
-    Parameters []byte            `bson:"parameters" json:"parameters"`
-    Body       []byte            `bson:"body" json:"body"`
+    Endpoint   dbmodels.Endpoint `json:"endpoint"`
+    Time       time.Time         `json:"time"`
+    HTTPMethod string            `json:"httpMethod"`
+    Header     []byte            `json:"header"`
+    Parameters []byte            `json:"parameters"`
+    Body       []byte            `json:"body"`
 }
 
 func (requestHistory *RequestHistory) Equal(otherRequestHistory RequestHistory) bool {

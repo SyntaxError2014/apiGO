@@ -11,15 +11,15 @@ import (
 type Endpoint struct {
     Id  bson.ObjectId `bson:"_id" json:"id"`
 
-    URLPath        string                    `bson:"urlPath" json:"urlPath"`
-    User           dbmodels.User             `bson:"user" json:"user"`
-    Name           string                    `bson:"name" json:"name"`
-    Description    string                    `bson:"description" json:"description"`
-    Authentication dbmodels.EndpointAuth     `bson:"authentication" json:"authentication"`
-    GET            dbmodels.EndpointResponse `bson:"get" json:"get"`
-    POST           dbmodels.EndpointResponse `bson:"post" json:"post"`
-    PUT            dbmodels.EndpointResponse `bson:"put" json:"put"`
-    DELETE         dbmodels.EndpointResponse `bson:"delete" json:"delete"`
+    URLPath        string                    `json:"urlPath"`
+    User           dbmodels.User             `json:"user"`
+    Name           string                    `json:"name"`
+    Description    string                    `json:"description"`
+    Authentication dbmodels.EndpointAuth     `json:"authentication"`
+    GET            dbmodels.EndpointResponse `json:"get"`
+    POST           dbmodels.EndpointResponse `json:"post"`
+    PUT            dbmodels.EndpointResponse `json:"put"`
+    DELETE         dbmodels.EndpointResponse `json:"delete"`
 }
 
 func (endpoint *Endpoint) Equal(otherEndpoint Endpoint) bool {

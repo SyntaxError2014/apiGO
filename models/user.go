@@ -10,13 +10,13 @@ import (
 type User struct {
     Id  bson.ObjectId `json:"id"`
 
-    Username   string `bson:"username" json:"username"`
-    Password   string `bson:"password" json:"password"`
-    FirstName  string `bson:"firstName" json:"firstName"`
-    LastName   string `bson:"lastName" json:"lastName"`
-    Email      string `bson:"email" json:"email"`
-    FacebookId string `bson:"facebookId" json:"facebookId"`
-    GoogleId   string `bson:"googleId" json:"googleId"`
+    Username   string `json:"username"`
+    Password   string `json:"password"`
+    FirstName  string `json:"firstName"`
+    LastName   string `json:"lastName"`
+    Email      string `json:"email"`
+    FacebookId string `json:"facebookId"`
+    GoogleId   string `json:"googleId"`
 }
 
 func (user *User) SerializeJson() ([]byte, error) {

@@ -10,11 +10,11 @@ import (
 )
 
 type UserSession struct {
-    Id  bson.ObjectId `bson:"_id" json:"id"`
+    Id  bson.ObjectId `json:"id"`
 
-    User  dbmodels.User `bson:"user" json:"user"`
-    Token string        `bson:"token" json:"token"`
-    Time  time.Time     `bson:"time" json:"time"`
+    User  dbmodels.User `json:"user"`
+    Token string        `json:"token"`
+    Time  time.Time     `json:"time"`
 }
 
 func (userSession *UserSession) Equal(otherUserSession UserSession) bool {
