@@ -1,11 +1,20 @@
 package dbmodels
 
-import ()
+import (
+    "gopkg.in/mgo.v2/bson"
+)
 
 type User struct {
+    Id bson.ObjectId `bson:"_id" json:"id"`
 }
 
 func (user *User) Equal(otherUser User) bool {
+    switch {
+    case user.Id != otherUser.Id:
+        return false
+    }
+
+    return true
 }
 
 func (user *User) SerializeJson() ([]byte, error) {
