@@ -3,6 +3,8 @@ package api
 import (
     "apiGO/dbmodels"
     "apiGO/filter"
+    "apiGO/interfaces"
+    "apiGO/models"
     "apiGO/service"
     "encoding/json"
     "gopkg.in/mgo.v2/bson"
@@ -33,19 +35,24 @@ func (api *Api) GetUser(vars *ApiVar, resp *ApiResponse) error {
 }
 
 func (api *Api) PostUser(vars *ApiVar, resp *ApiResponse) error {
-    user := &dbmodels.User{}
+    expandedUser := &models.User{}
 
-    err := user.DeserializeJson(vars.RequestBody)
+    err := expandedUser.DeserializeJson(vars.RequestBody)
     if err != nil {
         return badRequest(resp, "The entity was not in the correct format")
     }
 
-    if !filter.CheckUserIntegrity(user) {
+    if !filter.CheckUserIntegrity(expandedUser) {
         return badRequest(resp, "The entity doesn't comply to the integrity requirements")
     }
 
-    err = service.CreateUser(user)
+    user, err := expandedUser.Collapse()
     if err != nil {
+        return internalServerError(resp, err.Error())
+    }
+
+    user, err = service.CreateUser(user)
+    if err != nil || user == nil {
         return internalServerError(resp, "The entity could not be processed")
     }
 
@@ -56,19 +63,24 @@ func (api *Api) PostUser(vars *ApiVar, resp *ApiResponse) error {
 }
 
 func (api *Api) PutUser(vars *ApiVar, resp *ApiResponse) error {
-    user := &dbmodels.User{}
-    err := user.DeserializeJson(vars.RequestBody)
+    expandedUser := &models.User{}
 
+    err := expandedUser.DeserializeJson(vars.RequestBody)
     if err != nil {
         return badRequest(resp, "The entity was not in the correct format")
     }
 
-    if user.Id == "" {
+    if expandedUser.Id == "" {
         return badRequest(resp, "No id was specified for the user to be updated")
     }
 
-    if !filter.CheckUserIntegrity(user) {
+    if !filter.CheckUserIntegrity(expandedUser) {
         return badRequest(resp, "The entity doesn't comply to the integrity requirements")
+    }
+
+    user, err := expandedUser.Collapse()
+    if err != nil {
+        return internalServerError(resp, err.Error())
     }
 
     err = service.UpdateUser(user)
@@ -120,7 +132,18 @@ func getAllUsers(vars *ApiVar, resp *ApiResponse, limit int) error {
         return internalServerError(resp, err.Error())
     }
 
-    usersJson, err := json.MarshalIndent(users, "", "  ")
+    var expandedUsers []models.User
+    expandedUsers = make([]models.User, len(users))
+
+    for i := 0; i < len(users); i++ {
+        err = expandedUsers[i].Expand(users[i])
+
+        if err != nil {
+            return internalServerError(resp, err.Error())
+        }
+    }
+
+    usersJson, err := json.MarshalIndent(expandedUsers, interfaces.JsonPrefix, interfaces.JsonIndent)
 
     if err != nil {
         return internalServerError(resp, err.Error())
@@ -147,8 +170,14 @@ func getUser(vars *ApiVar, resp *ApiResponse, userId bson.ObjectId) error {
         return notFound(resp, "No User with the selected id was found")
     }
 
-    userJson, err := user.SerializeJson()
+    var expandedUser models.User
+    err = expandedUser.Expand(*user)
 
+    if err != nil {
+        return internalServerError(resp, err.Error())
+    }
+
+    userJson, err := expandedUser.SerializeJson()
     if err != nil {
         return internalServerError(resp, err.Error())
     }
