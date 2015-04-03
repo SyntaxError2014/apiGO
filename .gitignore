@@ -23,7 +23,6 @@ sftp-config.json
 *.a
 *.so
 main/main
-main/rpc/rpc
 
 # Folders
 _obj
