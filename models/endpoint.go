@@ -9,7 +9,7 @@ import (
 )
 
 type Endpoint struct {
-    Id  bson.ObjectId `bson:"_id" json:"id"`
+    Id  bson.ObjectId `json:"id"`
 
     URLPath        string                    `json:"urlPath"`
     User           dbmodels.User             `json:"user"`

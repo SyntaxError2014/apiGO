@@ -8,5 +8,15 @@
       "POST": "Api.PostUserSession",
       "PUT": "Api.PutUserSession"
     }
+  },
+  {
+    "id": "EndpointsRoute",
+    "pattern": "/endpoints",
+    "handlers": {
+      "DELETE": "Api.DeleteEndpoint",
+      "GET": "Api.GetEndpoint",
+      "POST": "Api.PostEndpoint",
+      "PUT": "Api.PutEndpoint"
+    }
   }
 ]

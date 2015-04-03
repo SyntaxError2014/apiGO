@@ -11,7 +11,7 @@ import (
 )
 
 type RequestHistory struct {
-    Id  bson.ObjectId `bson:"_id" json:"id"`
+    Id  bson.ObjectId `json:"id"`
 
     Endpoint   dbmodels.Endpoint `json:"endpoint"`
     Time       time.Time         `json:"time"`
