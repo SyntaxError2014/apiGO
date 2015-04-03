@@ -22,6 +22,20 @@ func (user *User) Equal(otherUser User) bool {
     switch {
     case user.Id != otherUser.Id:
         return false
+    case user.Username != otherUser.Username:
+        return false
+    case user.Password != otherUser.Password:
+        return false
+    case user.FirstName != otherUser.FirstName:
+        return false
+    case user.LastName != otherUser.LastName:
+        return false
+    case user.Email != otherUser.Email:
+        return false
+    case user.FacebookId != otherUser.FacebookId:
+        return false
+    case user.GoogleId != otherUser.GoogleId:
+        return false
     }
 
     return true
