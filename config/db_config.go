@@ -64,8 +64,8 @@ func InitDatabase(configFile string) {
 // kept in environment variables. This is done
 // in order to easily use a CI service
 func InitTestsDatabase() {
-    dbName := os.Getenv("MONGO_TESTDB_NAME")
-    dbConn := os.Getenv("MONGO_TESTDB_CONN")
+    dbName := os.Getenv("APIGO_TESTDB_NAME")
+    dbConn := os.Getenv("APIGO_TESTDB_CONN")
 
     if len(dbName) == 0 || len(dbConn) == 0 {
         log.Fatal("Environment variables for the test database are not set!")
