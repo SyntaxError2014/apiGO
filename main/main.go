@@ -2,9 +2,14 @@ package main
 
 import (
     "apiGO/config"
+    "apiGO/dbmodels"
     "apiGO/servers"
+    "apiGO/service"
+    "gopkg.in/mgo.v2/bson"
     "runtime"
 )
+
+const basicObjectId = "507f1f77bcf86cd799439011"
 
 // Function for performing automatic initializations at application startup
 func initApplicationConfiguration() {
@@ -15,9 +20,31 @@ func initApplicationConfiguration() {
     config.InitRoutes(emptyConfigParam)
 }
 
+func initBasicEndpoint() {
+    id := bson.ObjectIdHex(basicObjectId)
+    basicEndpoint := dbmodels.NewEndpointResponse()
+
+    endpoint, _ := service.GetEndpoint(id)
+
+    if endpoint == nil {
+        endpoint = &dbmodels.Endpoint{
+            Id:      id,
+            URLPath: bson.NewObjectId().Hex(),
+            GET:     basicEndpoint,
+            POST:    basicEndpoint,
+            PUT:     basicEndpoint,
+            DELETE:  basicEndpoint,
+        }
+
+        service.CreateEndpoint(endpoint)
+    }
+}
+
 // Application entry point - sets the behaviour for the app
 func main() {
     initApplicationConfiguration()
+    initBasicEndpoint()
+
     runtime.GOMAXPROCS(2) // in order for the rpc and http servers to work in parallel
 
     go servers.StartRPCServer()
