@@ -1,0 +1,4 @@
+{
+	"databaseName": "apiGO_db",
+	"databaseConnectionString": "mongodb://apiGOAdmin:apiGOPass@localhost:27017/apiGO_db"
+}
