@@ -6,6 +6,7 @@ import (
     "apiGO/models"
     "apiGO/random"
     "strings"
+    "time"
 )
 
 func generateNewEndpoint() *dbmodels.Endpoint {
@@ -14,6 +15,7 @@ func generateNewEndpoint() *dbmodels.Endpoint {
         Name:        "Untitled",
         Description: "-",
         Enabled:     true,
+        DateCreated: time.Now().Local(),
         REST:        make(map[string]dbmodels.EndpointResponse, 4),
     }
 
@@ -33,7 +35,7 @@ func generateNewRoute(endpoint *models.Endpoint, resp *ApiResponse) error {
     }
 
     for method, endpointResponse := range endpoint.REST {
-        route.Handlers[method] = endpointResponse.Function
+        route.Handlers[method] = endpointResponse.GetApiFunction()
     }
 
     return config.AddRoute(route, true)
@@ -45,7 +47,7 @@ func updateRoute(routePath string, endpoint *dbmodels.Endpoint) error {
     route.Handlers = make(map[string]string, len(endpoint.REST))
 
     for method, endpointResponse := range endpoint.REST {
-        route.Handlers[method] = endpointResponse.Function
+        route.Handlers[method] = endpointResponse.GetApiFunction()
     }
 
     return config.ModifyRoute(route.Id, *route, true)

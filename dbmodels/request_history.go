@@ -12,7 +12,7 @@ type RequestHistory struct {
     Id  bson.ObjectId `bson:"_id" json:"id"`
 
     EndpointId         bson.ObjectId `bson:"endpointId,omitempty" json:"endpointId"`
-    Time               time.Time     `bson:"time" json:"time"`
+    RequestDate        time.Time     `bson:"requestDate" json:"requestDate"`
     HTTPMethod         string        `bson:"httpMethod" json:"httpMethod"`
     Header             []byte        `bson:"header" json:"header"`
     Parameters         []byte        `bson:"parameters" json:"parameters"`
@@ -28,7 +28,7 @@ func (requestHistory *RequestHistory) Equal(otherRequestHistory RequestHistory) 
         return false
     case requestHistory.EndpointId != otherRequestHistory.EndpointId:
         return false
-    case !requestHistory.Time.Equal(otherRequestHistory.Time):
+    case !requestHistory.RequestDate.Equal(otherRequestHistory.RequestDate):
         return false
     case bytes.Compare(requestHistory.Header, otherRequestHistory.Header) != 0:
         return false
