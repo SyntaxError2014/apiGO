@@ -1,12 +1,21 @@
 [
   {
+    "id": "UsersRoute",
+    "pattern": "/users",
+    "handlers": {
+      "DELETE": "Api.DeleteUser",
+      "GET": "Api.GetUser",
+      "POST": "Api.PostUser",
+      "PUT": "Api.PutUser"
+    }
+  },
+  {
     "id": "UserSessionsRoute",
     "pattern": "/users/sessions",
     "handlers": {
       "DELETE": "Api.DeleteUserSession",
       "GET": "Api.GetUserSession",
-      "POST": "Api.PostUserSession",
-      "PUT": "Api.PutUserSession"
+      "POST": "Api.PostUserSession"
     }
   },
   {
