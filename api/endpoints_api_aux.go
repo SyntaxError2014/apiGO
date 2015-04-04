@@ -6,6 +6,7 @@ import (
     "apiGO/models"
     "apiGO/random"
     "strings"
+    "time"
 )
 
 func generateNewEndpoint() *dbmodels.Endpoint {
@@ -14,6 +15,7 @@ func generateNewEndpoint() *dbmodels.Endpoint {
         Name:        "Untitled",
         Description: "-",
         Enabled:     true,
+        DateCreated: time.Now().Local(),
         REST:        make(map[string]dbmodels.EndpointResponse, 4),
     }
 

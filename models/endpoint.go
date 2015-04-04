@@ -6,6 +6,7 @@ import (
     "apiGO/service"
     "encoding/json"
     "gopkg.in/mgo.v2/bson"
+    "time"
 )
 
 type Endpoint struct {
@@ -17,6 +18,7 @@ type Endpoint struct {
     Description    string                               `json:"description"`
     Authentication dbmodels.EndpointAuth                `json:"authentication"`
     Enabled        bool                                 `json:"enabled"`
+    DateCreated    time.Time                            `json:"dateCreated"`
     REST           map[string]dbmodels.EndpointResponse `json:"rest"`
 }
 
@@ -31,6 +33,8 @@ func (endpoint *Endpoint) Equal(otherEndpoint Endpoint) bool {
     case endpoint.Name != otherEndpoint.Name:
         return false
     case endpoint.Enabled != otherEndpoint.Enabled:
+        return false
+    case !endpoint.DateCreated.Equal(otherEndpoint.DateCreated):
         return false
     case !endpoint.Authentication.Equal(otherEndpoint.Authentication):
         return false
