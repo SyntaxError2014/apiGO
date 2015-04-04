@@ -2,6 +2,7 @@ package filter
 
 import (
     "apiGO/models"
+    "apiGO/service"
 )
 
 // Checks if the user entity has all the mandatory
@@ -17,4 +18,15 @@ func CheckUserIntegrity(user *models.User) bool {
     }
 
     return true
+}
+
+// Checks whether the user already exists or not
+func CheckUserExists(user *models.User) bool {
+    user, err := service.GetUserByUsernameAndPassword(user.Username, user.Password)
+
+    if err == nil || user != nil {
+        return true
+    }
+
+    return false
 }

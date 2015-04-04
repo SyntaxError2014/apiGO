@@ -19,6 +19,10 @@ func (api *Api) PostUser(vars *ApiVar, resp *ApiResponse) error {
         return badRequest(resp, "The entity doesn't comply to the integrity requirements")
     }
 
+    if filter.CheckUserExists(expandedUser) {
+        return badRequest(resp, "The user already exists")
+    }
+
     user, err := expandedUser.Collapse()
     if err != nil {
         return internalServerError(resp, err.Error())
