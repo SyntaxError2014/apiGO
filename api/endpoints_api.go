@@ -11,7 +11,13 @@ import (
 )
 
 func (api *Api) GetEndpoint(vars *ApiVar, resp *ApiResponse) error {
-    endpoints, err := service.GetAllEndpoints()
+    // authenticate
+    user := authenticateUsingToken(vars, resp)
+    if user == nil {
+        return nil
+    }
+
+    endpoints, err := service.GetAllEndpointsForUser(user.Id)
     if err != nil {
         return internalServerError(resp, err.Error())
     }
@@ -34,8 +40,13 @@ func (api *Api) GetEndpoint(vars *ApiVar, resp *ApiResponse) error {
 }
 
 func (api *Api) PostEndpoint(vars *ApiVar, resp *ApiResponse) error {
-    basicEndpoint := generateNewEndpoint()
+    // authenticate
+    user := authenticateUsingToken(vars, resp)
+    if user == nil {
+        return nil
+    }
 
+    basicEndpoint := generateNewEndpoint(user)
     basicEndpoint, err := service.CreateEndpoint(basicEndpoint)
 
     if err != nil || basicEndpoint == nil {
@@ -46,7 +57,6 @@ func (api *Api) PostEndpoint(vars *ApiVar, resp *ApiResponse) error {
     endpoint.Expand(*basicEndpoint)
 
     endpointJson, err := endpoint.SerializeJson()
-
     if err != nil || endpointJson == nil {
         return internalServerError(resp, err.Error())
     }
@@ -64,9 +74,15 @@ func (api *Api) PostEndpoint(vars *ApiVar, resp *ApiResponse) error {
 }
 
 func (api *Api) PutEndpoint(vars *ApiVar, resp *ApiResponse) error {
-    expandedEndpoint := &models.Endpoint{}
+    // authenticate
+    user := authenticateUsingToken(vars, resp)
+    if user == nil {
+        return nil
+    }
 
+    expandedEndpoint := &models.Endpoint{}
     err := expandedEndpoint.DeserializeJson(vars.RequestBody)
+
     if err != nil {
         return badRequest(resp, "The entity was not in the correct format")
     }
@@ -104,8 +120,13 @@ func (api *Api) PutEndpoint(vars *ApiVar, resp *ApiResponse) error {
 }
 
 func (api *Api) DeleteEndpoint(vars *ApiVar, resp *ApiResponse) error {
-    endpointId, err, found := filter.GetIdFromParams(vars.RequestForm)
+    // authenticate
+    user := authenticateUsingToken(vars, resp)
+    if user == nil {
+        return nil
+    }
 
+    endpointId, err, found := filter.GetIdFromParams(vars.RequestForm)
     if found {
         if err != nil {
             return badRequest(resp, err.Error())

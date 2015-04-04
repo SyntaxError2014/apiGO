@@ -21,6 +21,13 @@ const (
 // Used for defining a type representing the api
 type Api int
 
+// Data type containing the basic auth details
+type BasicAuthentication struct {
+    Username string
+    Password string
+    OK       bool
+}
+
 // Data type containing important data from a HTTP
 // request that has been made to the server
 type ApiVar struct {
@@ -30,6 +37,7 @@ type ApiVar struct {
     RequestForm          url.Values
     RequestContentLength int64
     RequestBody          []byte
+    BasicAuth            BasicAuthentication
 }
 
 // Data type containing important data that will be

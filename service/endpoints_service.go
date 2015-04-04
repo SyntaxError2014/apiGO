@@ -14,3 +14,13 @@ func GetEndpointByURLPath(urlPath string) (*dbmodels.Endpoint, error) {
 
     return &endpoint, err
 }
+
+func GetAllEndpointsForUser(userId bson.ObjectId) ([]dbmodels.Endpoint, error) {
+    session, collection := Connect(EndpointsCollectionName)
+    defer session.Close()
+
+    var endpoints []dbmodels.Endpoint
+    err := collection.Find(bson.M{"userId": userId}).All(&endpoints)
+
+    return endpoints, err
+}

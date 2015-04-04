@@ -32,7 +32,6 @@ func (api *Api) GenericDELETE(vars *ApiVar, resp *ApiResponse) error {
 
 func validateAndGetEndpoint(vars *ApiVar, resp *ApiResponse) *dbmodels.Endpoint {
     endpoint, err := service.GetEndpointByURLPath(vars.Route.Pattern)
-
     if err != nil || endpoint == nil {
         notFound(resp, err.Error())
         return nil
@@ -43,13 +42,31 @@ func validateAndGetEndpoint(vars *ApiVar, resp *ApiResponse) *dbmodels.Endpoint 
         return nil
     }
 
-    response := endpoint.REST[vars.RequestMethod]
+    if !performBasicAuth(endpoint, vars) {
+        unauthorized(resp, "Basic authentication failed!")
+        return nil
+    }
 
-    resp.StatusCode = response.StatusCode
-    resp.Message = []byte(response.Response)
+    endpointResponse := endpoint.REST[vars.RequestMethod]
 
-    // delay response
-    time.Sleep(response.Delay * time.Millisecond)
+    resp.StatusCode = endpointResponse.StatusCode
+    resp.Message = []byte(endpointResponse.Response)
+
+    // delay the response
+    time.Sleep(endpointResponse.Delay * time.Millisecond)
 
     return endpoint
+}
+
+func performBasicAuth(endpoint *dbmodels.Endpoint, vars *ApiVar) bool {
+    switch {
+    case !vars.BasicAuth.OK:
+        return false
+    case vars.BasicAuth.Username != endpoint.Authentication.Username:
+        return false
+    case vars.BasicAuth.Password != endpoint.Authentication.Password:
+        return false
+    }
+
+    return true
 }
