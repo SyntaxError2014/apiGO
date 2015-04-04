@@ -13,12 +13,15 @@ import (
 type RequestHistory struct {
     Id  bson.ObjectId `json:"id"`
 
-    Endpoint   dbmodels.Endpoint `json:"endpoint"`
-    Time       time.Time         `json:"time"`
-    HTTPMethod string            `json:"httpMethod"`
-    Header     []byte            `json:"header"`
-    Parameters []byte            `json:"parameters"`
-    Body       []byte            `json:"body"`
+    Endpoint           dbmodels.Endpoint `json:"endpoint"`
+    Time               time.Time         `json:"time"`
+    HTTPMethod         string            `json:"httpMethod"`
+    Header             []byte            `json:"header"`
+    Parameters         []byte            `json:"parameters"`
+    Body               []byte            `json:"body"`
+    ResponseStatusCode int               `bson:"responseStatusCode" json:"responseStatusCode"`
+    ResponseMessage    []byte            `bson:"responseMessage" json:"responseMessage"`
+    ResponseType       string            `bson:"responseType" json:"responseType"`
 }
 
 func (requestHistory *RequestHistory) Equal(otherRequestHistory RequestHistory) bool {
@@ -34,6 +37,12 @@ func (requestHistory *RequestHistory) Equal(otherRequestHistory RequestHistory) 
     case bytes.Compare(requestHistory.Parameters, otherRequestHistory.Parameters) != 0:
         return false
     case bytes.Compare(requestHistory.Body, otherRequestHistory.Body) != 0:
+        return false
+    case requestHistory.ResponseStatusCode != otherRequestHistory.ResponseStatusCode:
+        return false
+    case bytes.Compare(requestHistory.ResponseMessage, otherRequestHistory.ResponseMessage) != 0:
+        return false
+    case requestHistory.ResponseType != otherRequestHistory.ResponseType:
         return false
     }
 
@@ -67,6 +76,9 @@ func (requestHistory *RequestHistory) Expand(baseRequestHistory dbmodels.Request
     requestHistory.Header = baseRequestHistory.Header
     requestHistory.Parameters = baseRequestHistory.Parameters
     requestHistory.Body = baseRequestHistory.Body
+    requestHistory.ResponseStatusCode = baseRequestHistory.ResponseStatusCode
+    requestHistory.ResponseMessage = baseRequestHistory.ResponseMessage
+    requestHistory.ResponseType = baseRequestHistory.ResponseType
 
     endpoint, err := service.GetEndpoint(baseRequestHistory.EndpointId)
     if err != nil {
@@ -80,13 +92,16 @@ func (requestHistory *RequestHistory) Expand(baseRequestHistory dbmodels.Request
 
 func (requestHistory *RequestHistory) Collapse() (*dbmodels.RequestHistory, error) {
     var collapsedRequestHistory = dbmodels.RequestHistory{
-        Id:         requestHistory.Id,
-        EndpointId: requestHistory.Endpoint.Id,
-        Time:       requestHistory.Time,
-        HTTPMethod: requestHistory.HTTPMethod,
-        Header:     requestHistory.Header,
-        Parameters: requestHistory.Parameters,
-        Body:       requestHistory.Body,
+        Id:                 requestHistory.Id,
+        EndpointId:         requestHistory.Endpoint.Id,
+        Time:               requestHistory.Time,
+        HTTPMethod:         requestHistory.HTTPMethod,
+        Header:             requestHistory.Header,
+        Parameters:         requestHistory.Parameters,
+        Body:               requestHistory.Body,
+        ResponseStatusCode: requestHistory.ResponseStatusCode,
+        ResponseMessage:    requestHistory.ResponseMessage,
+        ResponseType:       requestHistory.ResponseType,
     }
 
     return &collapsedRequestHistory, nil
