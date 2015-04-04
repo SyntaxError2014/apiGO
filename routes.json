@@ -18,15 +18,5 @@
       "POST": "Api.PostEndpoint",
       "PUT": "Api.PutEndpoint"
     }
-  },
-  {
-    "id": "beugP",
-    "pattern": "/QxzmLmiT",
-    "handlers": {
-      "DELETE": "Api.GenericDELETE",
-      "GET": "Api.GenericGET",
-      "POST": "Api.GenericPOST",
-      "PUT": "Api.GenericPUT"
-    }
   }
 ]

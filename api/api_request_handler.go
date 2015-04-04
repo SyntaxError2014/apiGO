@@ -21,7 +21,7 @@ func ApiHandler(rw http.ResponseWriter, req *http.Request) {
         return
     }
 
-    route := findRoute(path)
+    route := config.GetRouteByPattern(path)
 
     if route == nil {
         GiveApiMessage(http.StatusNotFound, "The requested URL cannot be found", rw)
@@ -36,18 +36,6 @@ func ApiHandler(rw http.ResponseWriter, req *http.Request) {
     }
 
     PerformClientCall(handler, rw, req, route)
-}
-
-// Finds the route which has the selected pattern.
-// Returns nil in case such a route doesn't exist
-func findRoute(pattern string) *config.Route {
-    for _, route := range config.Routes {
-        if route.Pattern == pattern {
-            return &route
-        }
-    }
-
-    return nil
 }
 
 // Searches a certain routes to see whether it accepts a certain

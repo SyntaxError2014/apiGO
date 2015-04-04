@@ -2,18 +2,18 @@ package api
 
 import ()
 
-func GenericGET(vars *ApiVar, resp *ApiResponse) error {
+func (api *Api) GenericGET(vars *ApiVar, resp *ApiResponse) error {
     return nil
 }
 
-func GenericPOST(vars *ApiVar, resp *ApiResponse) error {
+func (api *Api) GenericPOST(vars *ApiVar, resp *ApiResponse) error {
     return nil
 }
 
-func GenericPUT(vars *ApiVar, resp *ApiResponse) error {
+func (api *Api) GenericPUT(vars *ApiVar, resp *ApiResponse) error {
     return nil
 }
 
-func GenericDELETE(vars *ApiVar, resp *ApiResponse) error {
+func (api *Api) GenericDELETE(vars *ApiVar, resp *ApiResponse) error {
     return nil
 }

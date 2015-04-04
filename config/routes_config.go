@@ -119,6 +119,17 @@ func GetRoute(routeId string) *Route {
     return nil
 }
 
+// Get a Route entity from the active routes list, base on its pattern
+func GetRouteByPattern(pattern string) *Route {
+    for _, route := range Routes {
+        if route.Pattern == pattern {
+            return &route
+        }
+    }
+
+    return nil
+}
+
 // This function checks whether there has been a modification in the
 // array of active API routes. If there is no modification, then
 // this means that an error has occured when adding, deleting or
