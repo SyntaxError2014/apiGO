@@ -3,7 +3,7 @@
     "id": "UsersRoute",
     "pattern": "/users",
     "handlers": {
-      "POST": "Api.PostUser",
+      "POST": "Api.PostUser"
     }
   },
   {

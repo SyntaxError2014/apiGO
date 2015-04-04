@@ -20,7 +20,6 @@ func initApplicationConfiguration() {
 // Application entry point - sets the behaviour for the app
 func main() {
     initApplicationConfiguration()
-
     runtime.GOMAXPROCS(2) // in order for the rpc and http servers to work in parallel
 
     go servers.StartRPCServer()

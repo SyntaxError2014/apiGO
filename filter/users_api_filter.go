@@ -8,9 +8,9 @@ import (
 // fields populated with any kind of data
 func CheckUserIntegrity(user *models.User) bool {
     switch {
-    case len(user.Id) == 0:
-        return false
     case len(user.Username) == 0:
+        return false
+    case len(user.Password) == 0:
         return false
     case len(user.Email) == 0:
         return false
