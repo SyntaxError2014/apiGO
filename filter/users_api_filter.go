@@ -22,9 +22,9 @@ func CheckUserIntegrity(user *models.User) bool {
 
 // Checks whether the user already exists or not
 func CheckUserExists(user *models.User) bool {
-    user, err := service.GetUserByUsernameAndPassword(user.Username, user.Password)
+    dbUser, err := service.GetUserByUsernameAndPassword(user.Username, user.Password)
 
-    if err == nil || user != nil {
+    if err == nil || dbUser != nil {
         return true
     }
 

@@ -59,12 +59,19 @@ func validateAndGetEndpoint(vars *ApiVar, resp *ApiResponse) *dbmodels.Endpoint 
 }
 
 func performBasicAuth(endpoint *dbmodels.Endpoint, vars *ApiVar) bool {
+    var usr string = endpoint.Authentication.Username
+    var pass string = endpoint.Authentication.Password
+
+    if len(usr) == 0 && len(pass) == 0 {
+        return true
+    }
+
     switch {
     case !vars.BasicAuth.OK:
         return false
-    case vars.BasicAuth.Username != endpoint.Authentication.Username:
+    case vars.BasicAuth.Username != usr:
         return false
-    case vars.BasicAuth.Password != endpoint.Authentication.Password:
+    case vars.BasicAuth.Password != pass:
         return false
     }
 
