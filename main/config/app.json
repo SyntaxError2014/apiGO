@@ -1,0 +1,7 @@
+{
+	"applicationName": "apiGO",
+	"apiInstance": "v1",
+	"httpServerAddress": ":7500",
+	"rpcServerAddress": ":7501",
+	"protocol": "tcp"
+}

@@ -1,0 +1,28 @@
+[
+  {
+    "id": "UsersRoute",
+    "pattern": "/users",
+    "handlers": {
+      "POST": "Api.PostUser"
+    }
+  },
+  {
+    "id": "UserSessionsRoute",
+    "pattern": "/users/sessions",
+    "handlers": {
+      "DELETE": "Api.DeleteUserSession",
+      "GET": "Api.GetUserSession",
+      "POST": "Api.PostUserSession"
+    }
+  },
+  {
+    "id": "EndpointsRoute",
+    "pattern": "/endpoints",
+    "handlers": {
+      "DELETE": "Api.DeleteEndpoint",
+      "GET": "Api.GetEndpoint",
+      "POST": "Api.PostEndpoint",
+      "PUT": "Api.PutEndpoint"
+    }
+  }
+]
