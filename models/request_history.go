@@ -33,10 +33,6 @@ func (requestHistory *RequestHistory) Equal(otherRequestHistory RequestHistory) 
         return false
     case !requestHistory.RequestDate.Equal(otherRequestHistory.RequestDate):
         return false
-    // case bytes.Compare(requestHistory.Header, otherRequestHistory.Header) != 0:
-    //     return false
-    // case bytes.Compare(requestHistory.Parameters, otherRequestHistory.Parameters) != 0:
-    //     return false
     case bytes.Compare(requestHistory.Body, otherRequestHistory.Body) != 0:
         return false
     case requestHistory.ResponseStatusCode != otherRequestHistory.ResponseStatusCode:

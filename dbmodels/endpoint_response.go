@@ -10,8 +10,6 @@ type EndpointResponse struct {
     Delay       time.Duration `bson:"delay" json:"delay"`
     Response    string        `bson:"response" json:"response"`
     ContentType string        `bson:"contentType" json:"contentType"`
-
-    function string
 }
 
 func (endpointResponse EndpointResponse) Equal(otherEndpointResponse EndpointResponse) bool {
@@ -24,15 +22,13 @@ func (endpointResponse EndpointResponse) Equal(otherEndpointResponse EndpointRes
         return false
     case endpointResponse.ContentType != otherEndpointResponse.ContentType:
         return false
-    case endpointResponse.function != otherEndpointResponse.function:
-        return false
     }
 
     return true
 }
 
-func (endpointResponse EndpointResponse) GetApiFunction() string {
-    return endpointResponse.function
+func (endpointResponse EndpointResponse) GetApiFunction(method string) string {
+    return defineFunction(method)
 }
 
 func NewEndpointResponse(method string) EndpointResponse {
@@ -41,8 +37,11 @@ func NewEndpointResponse(method string) EndpointResponse {
         Delay:       0,
         Response:    "Hello world!",
         ContentType: "text/plain",
-        function:    strings.Join([]string{"Api.Generic", method}, ""),
     }
 
     return basicEndpointResponse
+}
+
+func defineFunction(method string) string {
+    return strings.Join([]string{"Api.Generic", method}, "")
 }
