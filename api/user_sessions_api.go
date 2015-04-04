@@ -39,12 +39,6 @@ func (api *Api) GetUserSession(vars *ApiVar, resp *ApiResponse) error {
     return nil
 }
 
-// PRIMESC USER + PASS intr-un JSON de User
-// PARAMS: 1.) username 2.) password
-// Validare key value, daca nu -> 401 UNAUTHORIZED
-// STERGE SESIUNILE DEJA EXISTENTE LA USER
-// CREEZ O SESIUNE CU USERUL MATCHUIT
-// RETURN Token de la user
 func (api *Api) PostUserSession(vars *ApiVar, resp *ApiResponse) error {
     // Get URL parameters
     username, userError, userWasFound := filter.GetStringValueFromParams("username", vars.RequestForm)

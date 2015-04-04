@@ -33,7 +33,7 @@ func generateNewRoute(endpoint *models.Endpoint, resp *ApiResponse) error {
     }
 
     for method, endpointResponse := range endpoint.REST {
-        route.Handlers[method] = endpointResponse.Function
+        route.Handlers[method] = endpointResponse.GetApiFunction()
     }
 
     return config.AddRoute(route, true)
@@ -45,7 +45,7 @@ func updateRoute(routePath string, endpoint *dbmodels.Endpoint) error {
     route.Handlers = make(map[string]string, len(endpoint.REST))
 
     for method, endpointResponse := range endpoint.REST {
-        route.Handlers[method] = endpointResponse.Function
+        route.Handlers[method] = endpointResponse.GetApiFunction()
     }
 
     return config.ModifyRoute(route.Id, *route, true)
