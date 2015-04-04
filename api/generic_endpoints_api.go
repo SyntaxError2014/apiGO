@@ -3,6 +3,7 @@ package api
 import (
     "apiGO/dbmodels"
     "apiGO/service"
+    "net/http"
     "time"
 )
 
@@ -37,20 +38,42 @@ func validateAndGetEndpoint(vars *ApiVar, resp *ApiResponse) *dbmodels.Endpoint 
         return nil
     }
 
+    requestHistory := generateAccessHistory(endpoint, vars)
+
     if endpoint.Enabled == false {
-        serviceUnavailable(resp, "This endpoint is not enabled")
+        msg := "This endpoint is not enabled"
+
+        requestHistory.ResponseStatusCode = http.StatusServiceUnavailable
+        requestHistory.ResponseMessage = []byte(msg)
+        requestHistory.ResponseContentType = "text/plain"
+
+        serviceUnavailable(resp, msg)
         return nil
     }
 
     if !performBasicAuth(endpoint, vars) {
-        unauthorized(resp, "Basic authentication failed!")
+        msg := "Basic authentication failed!"
+
+        requestHistory.ResponseStatusCode = http.StatusServiceUnavailable
+        requestHistory.ResponseMessage = []byte(msg)
+        requestHistory.ResponseContentType = "text/plain"
+
+        unauthorized(resp, msg)
         return nil
     }
 
     endpointResponse := endpoint.REST[vars.RequestMethod]
 
+    // Set the response
     resp.StatusCode = endpointResponse.StatusCode
     resp.Message = []byte(endpointResponse.Response)
+    resp.ContentType = endpointResponse.ContentType
+
+    // Set the response history and add it to the database
+    requestHistory.ResponseStatusCode = resp.StatusCode
+    requestHistory.ResponseMessage = resp.Message
+    requestHistory.ResponseContentType = resp.ContentType
+    service.CreateRequestHistory(requestHistory)
 
     // delay the response
     time.Sleep(endpointResponse.Delay * time.Millisecond)
@@ -76,4 +99,18 @@ func performBasicAuth(endpoint *dbmodels.Endpoint, vars *ApiVar) bool {
     }
 
     return true
+}
+
+func generateAccessHistory(endpoint *dbmodels.Endpoint, vars *ApiVar) *dbmodels.RequestHistory {
+    dbHistory := dbmodels.RequestHistory{
+        EndpointId:          endpoint.Id,
+        RequestDate:         time.Now().Local(),
+        HTTPMethod:          vars.RequestMethod,
+        Header:              vars.RequestHeader,
+        Parameters:          vars.RequestForm,
+        Body:                vars.RequestBody,
+        ResponseContentType: vars.RequestHeader.Get("Content-Type"),
+    }
+
+    return &dbHistory
 }

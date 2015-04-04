@@ -7,21 +7,22 @@ import (
     "bytes"
     "encoding/json"
     "gopkg.in/mgo.v2/bson"
+    "net/url"
     "time"
 )
 
 type RequestHistory struct {
     Id  bson.ObjectId `json:"id"`
 
-    Endpoint           dbmodels.Endpoint `json:"endpoint"`
-    RequestDate        time.Time         `json:"requestDate"`
-    HTTPMethod         string            `json:"httpMethod"`
-    Header             []byte            `json:"header"`
-    Parameters         []byte            `json:"parameters"`
-    Body               []byte            `json:"body"`
-    ResponseStatusCode int               `bson:"responseStatusCode" json:"responseStatusCode"`
-    ResponseMessage    []byte            `bson:"responseMessage" json:"responseMessage"`
-    ResponseType       string            `bson:"responseType" json:"responseType"`
+    Endpoint            dbmodels.Endpoint   `json:"endpoint"`
+    RequestDate         time.Time           `json:"requestDate"`
+    HTTPMethod          string              `json:"httpMethod"`
+    Header              map[string][]string `json:"header"`
+    Parameters          url.Values          `json:"parameters"`
+    Body                []byte              `json:"body"`
+    ResponseStatusCode  int                 `bson:"responseStatusCode" json:"responseStatusCode"`
+    ResponseMessage     []byte              `bson:"responseMessage" json:"responseMessage"`
+    ResponseContentType string              `bson:"responseContentType" json:"responseContentType"`
 }
 
 func (requestHistory *RequestHistory) Equal(otherRequestHistory RequestHistory) bool {
@@ -32,17 +33,17 @@ func (requestHistory *RequestHistory) Equal(otherRequestHistory RequestHistory) 
         return false
     case !requestHistory.RequestDate.Equal(otherRequestHistory.RequestDate):
         return false
-    case bytes.Compare(requestHistory.Header, otherRequestHistory.Header) != 0:
-        return false
-    case bytes.Compare(requestHistory.Parameters, otherRequestHistory.Parameters) != 0:
-        return false
+    // case bytes.Compare(requestHistory.Header, otherRequestHistory.Header) != 0:
+    //     return false
+    // case bytes.Compare(requestHistory.Parameters, otherRequestHistory.Parameters) != 0:
+    //     return false
     case bytes.Compare(requestHistory.Body, otherRequestHistory.Body) != 0:
         return false
     case requestHistory.ResponseStatusCode != otherRequestHistory.ResponseStatusCode:
         return false
     case bytes.Compare(requestHistory.ResponseMessage, otherRequestHistory.ResponseMessage) != 0:
         return false
-    case requestHistory.ResponseType != otherRequestHistory.ResponseType:
+    case requestHistory.ResponseContentType != otherRequestHistory.ResponseContentType:
         return false
     }
 
@@ -78,7 +79,7 @@ func (requestHistory *RequestHistory) Expand(baseRequestHistory dbmodels.Request
     requestHistory.Body = baseRequestHistory.Body
     requestHistory.ResponseStatusCode = baseRequestHistory.ResponseStatusCode
     requestHistory.ResponseMessage = baseRequestHistory.ResponseMessage
-    requestHistory.ResponseType = baseRequestHistory.ResponseType
+    requestHistory.ResponseContentType = baseRequestHistory.ResponseContentType
 
     endpoint, err := service.GetEndpoint(baseRequestHistory.EndpointId)
     if err != nil {
@@ -92,16 +93,16 @@ func (requestHistory *RequestHistory) Expand(baseRequestHistory dbmodels.Request
 
 func (requestHistory *RequestHistory) Collapse() (*dbmodels.RequestHistory, error) {
     var collapsedRequestHistory = dbmodels.RequestHistory{
-        Id:                 requestHistory.Id,
-        EndpointId:         requestHistory.Endpoint.Id,
-        RequestDate:        requestHistory.RequestDate,
-        HTTPMethod:         requestHistory.HTTPMethod,
-        Header:             requestHistory.Header,
-        Parameters:         requestHistory.Parameters,
-        Body:               requestHistory.Body,
-        ResponseStatusCode: requestHistory.ResponseStatusCode,
-        ResponseMessage:    requestHistory.ResponseMessage,
-        ResponseType:       requestHistory.ResponseType,
+        Id:                  requestHistory.Id,
+        EndpointId:          requestHistory.Endpoint.Id,
+        RequestDate:         requestHistory.RequestDate,
+        HTTPMethod:          requestHistory.HTTPMethod,
+        Header:              requestHistory.Header,
+        Parameters:          requestHistory.Parameters,
+        Body:                requestHistory.Body,
+        ResponseStatusCode:  requestHistory.ResponseStatusCode,
+        ResponseMessage:     requestHistory.ResponseMessage,
+        ResponseContentType: requestHistory.ResponseContentType,
     }
 
     return &collapsedRequestHistory, nil

@@ -34,7 +34,14 @@ func PerformClientCall(handlerName string, rw http.ResponseWriter, req *http.Req
     log.Println(req.Method, route.Pattern, resp.StatusCode)
     if err != nil {
         GiveApiMessage(resp.StatusCode, err.Error(), rw)
-    } else if resp.ErrorMessage != "" {
+        return
+    }
+
+    if len(resp.ContentType) > 0 {
+        rw.Header().Add("Content-type", resp.ContentType)
+    }
+
+    if resp.ErrorMessage != "" {
         GiveApiMessage(resp.StatusCode, resp.ErrorMessage, rw)
     } else {
         GiveApiResponse(resp.StatusCode, resp.Message, rw)

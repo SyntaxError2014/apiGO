@@ -46,13 +46,19 @@ type ApiResponse struct {
     Message      []byte
     StatusCode   int
     ErrorMessage string
+    ContentType  string
 }
 
 // Responds to the client that made the HTTP request with a status code
 // and appropriate response data (usually JSON/XML encoded data)
 func GiveApiResponse(statusCode int, message []byte, rw http.ResponseWriter) {
-    rw.Header().Add("Content-Type", "application/json")
-    rw.Header().Set("WWW-Authenticate", "Basic realm=\"private\"")
+    if rw.Header().Get("Content-Type") == "" {
+        rw.Header().Add("Content-Type", "application/json")
+    }
+
+    if statusCode == http.StatusUnauthorized {
+        rw.Header().Set("WWW-Authenticate", "Basic realm=\"private\"")
+    }
 
     if filter.CheckNotNull(message) {
         rw.WriteHeader(statusCode)

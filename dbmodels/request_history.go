@@ -5,21 +5,22 @@ import (
     "bytes"
     "encoding/json"
     "gopkg.in/mgo.v2/bson"
+    "net/url"
     "time"
 )
 
 type RequestHistory struct {
     Id  bson.ObjectId `bson:"_id" json:"id"`
 
-    EndpointId         bson.ObjectId `bson:"endpointId,omitempty" json:"endpointId"`
-    RequestDate        time.Time     `bson:"requestDate" json:"requestDate"`
-    HTTPMethod         string        `bson:"httpMethod" json:"httpMethod"`
-    Header             []byte        `bson:"header" json:"header"`
-    Parameters         []byte        `bson:"parameters" json:"parameters"`
-    Body               []byte        `bson:"body" json:"body"`
-    ResponseStatusCode int           `bson:"responseStatusCode" json:"responseStatusCode"`
-    ResponseMessage    []byte        `bson:"responseMessage" json:"responseMessage"`
-    ResponseType       string        `bson:"responseType" json:"responseType"`
+    EndpointId          bson.ObjectId       `bson:"endpointId,omitempty" json:"endpointId"`
+    RequestDate         time.Time           `bson:"requestDate" json:"requestDate"`
+    HTTPMethod          string              `bson:"httpMethod" json:"httpMethod"`
+    Header              map[string][]string `bson:"header" json:"header"`
+    Parameters          url.Values          `bson:"parameters" json:"parameters"`
+    Body                []byte              `bson:"body" json:"body"`
+    ResponseStatusCode  int                 `bson:"responseStatusCode" json:"responseStatusCode"`
+    ResponseMessage     []byte              `bson:"responseMessage" json:"responseMessage"`
+    ResponseContentType string              `bson:"responseContentType" json:"responseContentType"`
 }
 
 func (requestHistory *RequestHistory) Equal(otherRequestHistory RequestHistory) bool {
@@ -30,17 +31,17 @@ func (requestHistory *RequestHistory) Equal(otherRequestHistory RequestHistory) 
         return false
     case !requestHistory.RequestDate.Equal(otherRequestHistory.RequestDate):
         return false
-    case bytes.Compare(requestHistory.Header, otherRequestHistory.Header) != 0:
-        return false
-    case bytes.Compare(requestHistory.Parameters, otherRequestHistory.Parameters) != 0:
-        return false
+    // case bytes.Compare(requestHistory.Header, otherRequestHistory.Header) != 0:
+    //     return false
+    // case bytes.Compare(requestHistory.Parameters, otherRequestHistory.Parameters) != 0:
+    //     return false
     case bytes.Compare(requestHistory.Body, otherRequestHistory.Body) != 0:
         return false
     case requestHistory.ResponseStatusCode != otherRequestHistory.ResponseStatusCode:
         return false
     case bytes.Compare(requestHistory.ResponseMessage, otherRequestHistory.ResponseMessage) != 0:
         return false
-    case requestHistory.ResponseType != otherRequestHistory.ResponseType:
+    case requestHistory.ResponseContentType != otherRequestHistory.ResponseContentType:
         return false
     }
 
