@@ -15,11 +15,6 @@ func CheckEndpointIntegrity(endpoint *models.Endpoint) bool {
         return false
     case endpoint.User.Equal(dbmodels.User{}):
         return false
-    case endpoint.REST["GET"].Equal(dbmodels.EndpointResponse{}) &&
-        endpoint.REST["POST"].Equal(dbmodels.EndpointResponse{}) &&
-        endpoint.REST["PUT"].Equal(dbmodels.EndpointResponse{}) &&
-        endpoint.REST["DELETE"].Equal(dbmodels.EndpointResponse{}):
-        return false
     }
 
     return true

@@ -1,6 +1,7 @@
 package filter
 
 import (
+    "apiGO/dbmodels"
     "apiGO/models"
     "apiGO/service"
 )
@@ -24,7 +25,7 @@ func CheckUserIntegrity(user *models.User) bool {
 func CheckUserExists(user *models.User) bool {
     dbUser, err := service.GetUserByUsernameAndPassword(user.Username, user.Password)
 
-    if err == nil || dbUser != nil {
+    if err == nil || !dbUser.Equal(dbmodels.User{}) {
         return true
     }
 

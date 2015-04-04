@@ -31,7 +31,12 @@ func PerformClientCall(handlerName string, rw http.ResponseWriter, req *http.Req
 
     err = client.Call(handlerName, vars, resp)
 
-    log.Println(req.Method, route.Pattern, resp.StatusCode)
+    if len(resp.ErrorMessage) > 0 {
+        log.Println(req.Method, route.Pattern, resp.StatusCode, resp.ErrorMessage)
+    } else {
+        log.Println(req.Method, route.Pattern, resp.StatusCode, string(resp.Message))
+    }
+
     if err != nil {
         GiveApiMessage(resp.StatusCode, err.Error(), rw)
         return

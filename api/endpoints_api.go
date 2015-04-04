@@ -114,7 +114,7 @@ func (api *Api) PutEndpoint(vars *ApiVar, resp *ApiResponse) error {
     }
 
     resp.StatusCode = http.StatusOK
-    resp.Message, _ = endpoint.SerializeJson()
+    resp.Message, _ = expandedEndpoint.SerializeJson()
 
     return nil
 }

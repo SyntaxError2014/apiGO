@@ -58,7 +58,7 @@ func (api *Api) PostUserSession(vars *ApiVar, resp *ApiResponse) error {
     // Fetch User entity from database
     user, err := service.GetUserByUsernameAndPassword(username, password)
     if err != nil || user == nil {
-        return unauthorized(resp, "Username or password is incorrect")
+        return badRequest(resp, "Username or password is incorrect")
     }
 
     // Delete all the existing sessions
@@ -66,7 +66,7 @@ func (api *Api) PostUserSession(vars *ApiVar, resp *ApiResponse) error {
 
     // Generate a new user session
     userSession, err := service.GenerateAndInsertUserSession(user.Id)
-    if err != nil {
+    if err != nil || userSession == nil {
         return internalServerError(resp, err.Error())
     }
 
