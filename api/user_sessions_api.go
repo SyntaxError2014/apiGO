@@ -1,189 +1,87 @@
 package api
 
 import (
-    "apiGO/dbmodels"
     "apiGO/filter"
-    "apiGO/interfaces"
     "apiGO/models"
     "apiGO/service"
-    "encoding/json"
-    "gopkg.in/mgo.v2/bson"
     "net/http"
 )
 
 func (api *Api) GetUserSession(vars *ApiVar, resp *ApiResponse) error {
-    userSessionId, err, found := filter.GetIdFromParams(vars.RequestForm)
-    if found {
-        if err != nil {
-            return badRequest(resp, err.Error())
-        }
+    token, err, found := filter.GetStringValueFromParams("token", vars.RequestForm)
 
-        return getUserSession(vars, resp, userSessionId)
+    if !found {
+        return badRequest(resp, "Session token has not been specified")
     }
 
-    limit, err, found := filter.GetIntValueFromParams("limit", vars.RequestForm)
-    if found {
-        if err != nil {
-            return badRequest(resp, err.Error())
-        }
-
-        return getAllUserSessions(vars, resp, limit)
-    }
-
-    return getAllUserSessions(vars, resp, -1)
-
-}
-
-func (api *Api) PostUserSession(vars *ApiVar, resp *ApiResponse) error {
-    expandedUserSession := &models.UserSession{}
-
-    err := expandedUserSession.DeserializeJson(vars.RequestBody)
     if err != nil {
-        return badRequest(resp, "The entity was not in the correct format")
+        return badRequest(resp, err.Error())
     }
 
-    if !filter.CheckUserSessionIntegrity(expandedUserSession) {
-        return badRequest(resp, "The entity doesn't comply to the integrity requirements")
-    }
-
-    userSession, err := expandedUserSession.Collapse()
-    if err != nil {
-        return internalServerError(resp, err.Error())
-    }
-
-    userSession, err = service.CreateUserSession(userSession)
+    userSession, err := service.GetUserSessionByToken(token)
     if err != nil || userSession == nil {
-        return internalServerError(resp, "The entity could not be processed")
+        return notFound(resp, "There is no session with the specified token")
     }
 
-    resp.StatusCode = http.StatusCreated
-    resp.Message, _ = userSession.SerializeJson()
+    user, err := service.GetUser(userSession.UserId)
+    if err != nil || user == nil {
+        service.DeleteUserSession(userSession.Id)
+        return notFound(resp, "The user with the current session no longer exists")
+    }
+
+    expandedUser := &models.User{}
+    expandedUser.Expand(*user)
+    userJson, _ := expandedUser.SerializeJson()
+
+    resp.StatusCode = http.StatusOK
+    resp.Message = userJson
 
     return nil
 }
 
-func (api *Api) PutUserSession(vars *ApiVar, resp *ApiResponse) error {
-    expandedUserSession := &models.UserSession{}
+// PRIMESC USER + PASS intr-un JSON de User
+// PARAMS: 1.) username 2.) password
+// Validare key value, daca nu -> 401 UNAUTHORIZED
+// STERGE SESIUNILE DEJA EXISTENTE LA USER
+// CREEZ O SESIUNE CU USERUL MATCHUIT
+// RETURN Token de la user
+func (api *Api) PostUserSession(vars *ApiVar, resp *ApiResponse) error {
+    // Get URL parameters
+    username, userError, userWasFound := filter.GetStringValueFromParams("username", vars.RequestForm)
+    password, passwordError, passwordWasFound := filter.GetStringValueFromParams("password", vars.RequestForm)
 
-    err := expandedUserSession.DeserializeJson(vars.RequestBody)
-    if err != nil {
-        return badRequest(resp, "The entity was not in the correct format")
+    if !userWasFound || !passwordWasFound {
+        return badRequest(resp, "The username or password was not specified")
     }
 
-    if expandedUserSession.Id == "" {
-        return badRequest(resp, "No id was specified for the userSession to be updated")
+    if userError != nil {
+        return badRequest(resp, userError.Error())
+    }
+    if passwordError != nil {
+        return badRequest(resp, passwordError.Error())
     }
 
-    if !filter.CheckUserSessionIntegrity(expandedUserSession) {
-        return badRequest(resp, "The entity doesn't comply to the integrity requirements")
+    // Fetch User entity from database
+    user, err := service.GetUserByUsernameAndPassword(username, password)
+    if err != nil || user == nil {
+        return unauthorized(resp, "Username or password is incorrect")
     }
 
-    userSession, err := expandedUserSession.Collapse()
+    // Delete all the existing sessions
+    service.DeleteAllSessionsWithUserId(user.Id)
+
+    // Generate a new user session
+    userSession, err := service.GenerateAndInsertUserSession(user.Id)
     if err != nil {
         return internalServerError(resp, err.Error())
     }
 
-    err = service.UpdateUserSession(userSession)
-    if err != nil {
-        return notFound(resp, "The userSession with the specified id could not be found")
-    }
-
-    resp.StatusCode = http.StatusOK
-    resp.Message, _ = userSession.SerializeJson()
+    resp.StatusCode = http.StatusCreated
+    resp.Message = []byte(userSession.Token)
 
     return nil
 }
 
 func (api *Api) DeleteUserSession(vars *ApiVar, resp *ApiResponse) error {
-    userSessionId, err, found := filter.GetIdFromParams(vars.RequestForm)
-
-    if found {
-        if err != nil {
-            return badRequest(resp, err.Error())
-        }
-
-        err = service.DeleteUserSession(userSessionId)
-        if err != nil {
-            return notFound(resp, err.Error())
-        }
-
-        resp.StatusCode = http.StatusOK
-        return nil
-    }
-
-    return badRequest(resp, err.Error())
-}
-
-func getAllUserSessions(vars *ApiVar, resp *ApiResponse, limit int) error {
-    var userSessions []dbmodels.UserSession
-    var err error
-
-    if limit == 0 {
-        return badRequest(resp, "The limit cannot be 0. Use the value -1 for retrieving all the entities")
-    }
-
-    if limit != -1 {
-        userSessions, err = service.GetAllUserSessionsLimited(limit)
-    } else {
-        userSessions, err = service.GetAllUserSessions()
-    }
-
-    if err != nil {
-        return internalServerError(resp, err.Error())
-    }
-
-    var expandedUserSessions []models.UserSession
-    expandedUserSessions = make([]models.UserSession, len(userSessions))
-
-    for i := 0; i < len(userSessions); i++ {
-        err = expandedUserSessions[i].Expand(userSessions[i])
-
-        if err != nil {
-            return internalServerError(resp, err.Error())
-        }
-    }
-
-    userSessionsJson, err := json.MarshalIndent(expandedUserSessions, interfaces.JsonPrefix, interfaces.JsonIndent)
-
-    if err != nil {
-        return internalServerError(resp, err.Error())
-    }
-
-    resp.StatusCode = http.StatusOK
-    resp.Message = userSessionsJson
-
-    return nil
-}
-
-func getUserSession(vars *ApiVar, resp *ApiResponse, userSessionId bson.ObjectId) error {
-    userSession, err := service.GetUserSession(userSessionId)
-
-    if err != nil {
-        if err.Error() == "not found" {
-            return notFound(resp, err.Error())
-        } else {
-            return internalServerError(resp, err.Error())
-        }
-    }
-
-    if userSession == nil {
-        return notFound(resp, "No UserSession with the selected id was found")
-    }
-
-    var expandedUserSession models.UserSession
-    err = expandedUserSession.Expand(*userSession)
-
-    if err != nil {
-        return internalServerError(resp, err.Error())
-    }
-
-    userSessionJson, err := expandedUserSession.SerializeJson()
-    if err != nil {
-        return internalServerError(resp, err.Error())
-    }
-
-    resp.StatusCode = http.StatusOK
-    resp.Message = userSessionJson
-
     return nil
 }

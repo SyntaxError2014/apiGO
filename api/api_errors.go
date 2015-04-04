@@ -58,3 +58,14 @@ func methodNotAllowed(resp *ApiResponse, msg string) error {
 
     return nil
 }
+
+// Return a status and message that signals the API client
+// that the login failed or that the client isn't
+// logged in and therefore not authorized to use the endpoint
+func unauthorized(resp *ApiResponse, msg string) error {
+    resp.StatusCode = http.StatusUnauthorized
+    resp.Message = []byte(msg)
+    resp.ErrorMessage = msg
+
+    return nil
+}
