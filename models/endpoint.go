@@ -11,16 +11,13 @@ import (
 type Endpoint struct {
     Id  bson.ObjectId `json:"id"`
 
-    URLPath        string                    `json:"urlPath"`
-    User           dbmodels.User             `json:"user"`
-    Name           string                    `json:"name"`
-    Description    string                    `json:"description"`
-    Authentication dbmodels.EndpointAuth     `json:"authentication"`
-    Enabled        bool                      `json:"enabled"`
-    GET            dbmodels.EndpointResponse `json:"get"`
-    POST           dbmodels.EndpointResponse `json:"post"`
-    PUT            dbmodels.EndpointResponse `json:"put"`
-    DELETE         dbmodels.EndpointResponse `json:"delete"`
+    URLPath        string                               `json:"urlPath"`
+    User           dbmodels.User                        `json:"user"`
+    Name           string                               `json:"name"`
+    Description    string                               `json:"description"`
+    Authentication dbmodels.EndpointAuth                `json:"authentication"`
+    Enabled        bool                                 `json:"enabled"`
+    REST           map[string]dbmodels.EndpointResponse `json:"rest"`
 }
 
 func (endpoint *Endpoint) Equal(otherEndpoint Endpoint) bool {
@@ -37,14 +34,14 @@ func (endpoint *Endpoint) Equal(otherEndpoint Endpoint) bool {
         return false
     case !endpoint.Authentication.Equal(otherEndpoint.Authentication):
         return false
-    case !endpoint.GET.Equal(otherEndpoint.GET):
-        return false
-    case !endpoint.POST.Equal(otherEndpoint.POST):
-        return false
-    case !endpoint.PUT.Equal(otherEndpoint.PUT):
-        return false
-    case !endpoint.DELETE.Equal(otherEndpoint.DELETE):
-        return false
+    default:
+        for method, response := range endpoint.REST {
+            value, found := otherEndpoint.REST[method]
+
+            if !found || !value.Equal(response) {
+                return false
+            }
+        }
     }
 
     return true
@@ -77,10 +74,7 @@ func (endpoint *Endpoint) Expand(baseEndpoint dbmodels.Endpoint) error {
     endpoint.Description = baseEndpoint.Description
     endpoint.Authentication = baseEndpoint.Authentication
     endpoint.Enabled = baseEndpoint.Enabled
-    endpoint.GET = baseEndpoint.GET
-    endpoint.POST = baseEndpoint.POST
-    endpoint.PUT = baseEndpoint.PUT
-    endpoint.DELETE = baseEndpoint.DELETE
+    endpoint.REST = baseEndpoint.REST
 
     user, err := service.GetUser(baseEndpoint.UserId)
     if err != nil {
@@ -101,10 +95,7 @@ func (endpoint *Endpoint) Collapse() (*dbmodels.Endpoint, error) {
         Enabled:        endpoint.Enabled,
         Description:    endpoint.Description,
         Authentication: endpoint.Authentication,
-        GET:            endpoint.GET,
-        POST:           endpoint.POST,
-        PUT:            endpoint.PUT,
-        DELETE:         endpoint.DELETE,
+        REST:           endpoint.REST,
     }
 
     return &collapsedEndpoint, nil

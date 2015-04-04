@@ -9,7 +9,7 @@ type EndpointAuth struct {
     Password string        `bson:"password" json:"password"`
 }
 
-func (endpointAuth *EndpointAuth) Equal(otherEndpointAuth EndpointAuth) bool {
+func (endpointAuth EndpointAuth) Equal(otherEndpointAuth EndpointAuth) bool {
     switch {
     case endpointAuth.UserId != otherEndpointAuth.UserId:
         return false

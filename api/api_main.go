@@ -11,6 +11,13 @@ import (
     "net/url"
 )
 
+const (
+    GET    = "GET"
+    POST   = "POST"
+    PUT    = "PUT"
+    DELETE = "DELETE"
+)
+
 // Used for defining a type representing the api
 type Api int
 
@@ -18,6 +25,7 @@ type Api int
 // request that has been made to the server
 type ApiVar struct {
     Route                config.Route
+    RequestMethod        string
     RequestHeader        http.Header
     RequestForm          url.Values
     RequestContentLength int64

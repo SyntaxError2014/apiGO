@@ -37,3 +37,24 @@ func notFound(resp *ApiResponse, msg string) error {
 
     return nil
 }
+
+// Return a status and message that signals the API client
+// that the accessed endpoint is either disabled or currently
+// unavailable
+func serviceUnavailable(resp *ApiResponse, msg string) error {
+    resp.StatusCode = http.StatusServiceUnavailable
+    resp.Message = []byte(msg)
+    resp.ErrorMessage = msg
+
+    return nil
+}
+
+// Return a status and message that signals the API client
+// that the used HTTP Method is not allowed on this endpoint
+func methodNotAllowed(resp *ApiResponse, msg string) error {
+    resp.StatusCode = http.StatusMethodNotAllowed
+    resp.Message = []byte(msg)
+    resp.ErrorMessage = msg
+
+    return nil
+}

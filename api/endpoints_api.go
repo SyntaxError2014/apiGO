@@ -2,15 +2,12 @@ package api
 
 import (
     "apiGO/config"
-    "apiGO/dbmodels"
     "apiGO/filter"
     "apiGO/interfaces"
     "apiGO/models"
-    "apiGO/random"
     "apiGO/service"
     "encoding/json"
     "net/http"
-    "strings"
 )
 
 func (api *Api) GetEndpoint(vars *ApiVar, resp *ApiResponse) error {
@@ -37,14 +34,7 @@ func (api *Api) GetEndpoint(vars *ApiVar, resp *ApiResponse) error {
 }
 
 func (api *Api) PostEndpoint(vars *ApiVar, resp *ApiResponse) error {
-    basicEndpoint := &dbmodels.Endpoint{
-        URLPath: strings.Join([]string{"/", random.RandomString(8)}, ""),
-        Enabled: true,
-        GET:     dbmodels.NewEndpointResponse("GET"),
-        POST:    dbmodels.NewEndpointResponse("POST"),
-        PUT:     dbmodels.NewEndpointResponse("PUT"),
-        DELETE:  dbmodels.NewEndpointResponse("DELETE"),
-    }
+    basicEndpoint := generateNewEndpoint()
 
     basicEndpoint, err := service.CreateEndpoint(basicEndpoint)
 
@@ -140,40 +130,4 @@ func (api *Api) DeleteEndpoint(vars *ApiVar, resp *ApiResponse) error {
     }
 
     return badRequest(resp, err.Error())
-}
-
-func generateNewRoute(endpoint *models.Endpoint, resp *ApiResponse) error {
-    route := &config.Route{
-        Id:      random.RandomString(5),
-        Pattern: endpoint.URLPath,
-        Handlers: map[string]string{
-            "GET":    endpoint.GET.Function,
-            "POST":   endpoint.POST.Function,
-            "PUT":    endpoint.PUT.Function,
-            "DELETE": endpoint.DELETE.Function,
-        },
-    }
-
-    return config.AddRoute(route, true)
-}
-
-func updateRoute(routePath string, endpoint *dbmodels.Endpoint) error {
-    route := config.GetRouteByPattern(routePath)
-    route.Pattern = endpoint.URLPath
-    route.Handlers = make(map[string]string, 4)
-
-    if !endpoint.GET.Equal(dbmodels.EndpointResponse{}) {
-        route.Handlers["GET"] = endpoint.GET.Function
-    }
-    if !endpoint.POST.Equal(dbmodels.EndpointResponse{}) {
-        route.Handlers["POST"] = endpoint.POST.Function
-    }
-    if !endpoint.PUT.Equal(dbmodels.EndpointResponse{}) {
-        route.Handlers["PUT"] = endpoint.PUT.Function
-    }
-    if !endpoint.DELETE.Equal(dbmodels.EndpointResponse{}) {
-        route.Handlers["DELETE"] = endpoint.DELETE.Function
-    }
-
-    return config.ModifyRoute(route.Id, *route, true)
 }

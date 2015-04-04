@@ -9,16 +9,13 @@ import (
 type Endpoint struct {
     Id  bson.ObjectId `bson:"_id" json:"id"`
 
-    URLPath        string           `bson:"urlPath" json:"urlPath"`
-    UserId         bson.ObjectId    `bson:"userId,omitempty" json:"userId"`
-    Name           string           `bson:"name" json:"name"`
-    Description    string           `bson:"description" json:"description"`
-    Authentication EndpointAuth     `bson:"authentication" json:"authentication"`
-    Enabled        bool             `bson:"enabled" json:"enabled"`
-    GET            EndpointResponse `bson:"get" json:"get"`
-    POST           EndpointResponse `bson:"post" json:"post"`
-    PUT            EndpointResponse `bson:"put" json:"put"`
-    DELETE         EndpointResponse `bson:"delete" json:"delete"`
+    URLPath        string                      `bson:"urlPath" json:"urlPath"`
+    UserId         bson.ObjectId               `bson:"userId,omitempty" json:"userId"`
+    Name           string                      `bson:"name" json:"name"`
+    Description    string                      `bson:"description" json:"description"`
+    Authentication EndpointAuth                `bson:"authentication" json:"authentication"`
+    Enabled        bool                        `bson:"enabled" json:"enabled"`
+    REST           map[string]EndpointResponse `bson:"rest" json:"rest"`
 }
 
 func (endpoint *Endpoint) Equal(otherEndpoint Endpoint) bool {
@@ -35,14 +32,14 @@ func (endpoint *Endpoint) Equal(otherEndpoint Endpoint) bool {
         return false
     case !endpoint.Authentication.Equal(otherEndpoint.Authentication):
         return false
-    case !endpoint.GET.Equal(otherEndpoint.GET):
-        return false
-    case !endpoint.POST.Equal(otherEndpoint.POST):
-        return false
-    case !endpoint.PUT.Equal(otherEndpoint.PUT):
-        return false
-    case !endpoint.DELETE.Equal(otherEndpoint.DELETE):
-        return false
+    default:
+        for method, response := range endpoint.REST {
+            value, found := otherEndpoint.REST[method]
+
+            if !found || !value.Equal(response) {
+                return false
+            }
+        }
     }
 
     return true

@@ -2,16 +2,17 @@ package dbmodels
 
 import (
     "strings"
+    "time"
 )
 
 type EndpointResponse struct {
-    StatusCode int    `bson:"statusCode" json:"statusCode"`
-    Delay      int    `bson:"delay" json:"delay"`
-    Response   string `bson:"response" json:"response"`
-    Function   string `bson:"function" json:"function"`
+    StatusCode int           `bson:"statusCode" json:"statusCode"`
+    Delay      time.Duration `bson:"delay" json:"delay"`
+    Response   string        `bson:"response" json:"response"`
+    Function   string        `bson:"function" json:"function"`
 }
 
-func (endpointResponse *EndpointResponse) Equal(otherEndpointResponse EndpointResponse) bool {
+func (endpointResponse EndpointResponse) Equal(otherEndpointResponse EndpointResponse) bool {
     switch {
     case endpointResponse.StatusCode != otherEndpointResponse.StatusCode:
         return false

@@ -66,6 +66,7 @@ func createApiVars(route *config.Route, r *http.Request, rw http.ResponseWriter)
 
     vars := &ApiVar{
         Route:                *route,
+        RequestMethod:        r.Method,
         RequestHeader:        r.Header,
         RequestForm:          r.Form,
         RequestContentLength: r.ContentLength,

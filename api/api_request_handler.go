@@ -24,14 +24,14 @@ func ApiHandler(rw http.ResponseWriter, req *http.Request) {
     route := config.GetRouteByPattern(path)
 
     if route == nil {
-        GiveApiMessage(http.StatusNotFound, "The requested URL cannot be found", rw)
+        GiveApiMessage(http.StatusNotFound, "There is no endpoint here, RUN Forrest, RUN!!!", rw)
         return
     }
 
     handler := findApiMethod(req.Method, route)
 
     if handler == "" {
-        GiveApiMessage(http.StatusBadRequest, "The requested method is either not implemented, or not allowed", rw)
+        GiveApiMessage(http.StatusMethodNotAllowed, "The requested method is either not implemented, or not allowed", rw)
         return
     }
 
