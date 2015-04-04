@@ -20,12 +20,11 @@
     }
   },
   {
-    "id": "beugP",
-    "pattern": "/QxzmLmiT",
+    "id": "VPTXY",
+    "pattern": "/uTnALoNH",
     "handlers": {
       "DELETE": "Api.GenericDELETE",
       "GET": "Api.GenericGET",
-      "POST": "Api.GenericPOST",
       "PUT": "Api.GenericPUT"
     }
   }

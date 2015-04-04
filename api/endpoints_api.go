@@ -82,10 +82,7 @@ func (api *Api) PutEndpoint(vars *ApiVar, resp *ApiResponse) error {
         return notFound(resp, "The endpoint with the specified id could not be found")
     }
 
-    route := config.GetRouteByPattern(initialRoutePath)
-    route.Pattern = endpoint.URLPath
-
-    err = config.ModifyRoute(route.Id, *route, true)
+    err = updateRoute(initialRoutePath, endpoint)
     if err != nil {
         return internalServerError(resp, err.Error())
     }
@@ -138,4 +135,25 @@ func generateNewRoute(endpoint *models.Endpoint, resp *ApiResponse) error {
     }
 
     return config.AddRoute(route, true)
+}
+
+func updateRoute(routePath string, endpoint *dbmodels.Endpoint) error {
+    route := config.GetRouteByPattern(routePath)
+    route.Pattern = endpoint.URLPath
+    route.Handlers = make(map[string]string, 4)
+
+    if !endpoint.GET.Equal(dbmodels.EndpointResponse{}) {
+        route.Handlers["GET"] = endpoint.GET.Function
+    }
+    if !endpoint.POST.Equal(dbmodels.EndpointResponse{}) {
+        route.Handlers["POST"] = endpoint.POST.Function
+    }
+    if !endpoint.PUT.Equal(dbmodels.EndpointResponse{}) {
+        route.Handlers["PUT"] = endpoint.PUT.Function
+    }
+    if !endpoint.DELETE.Equal(dbmodels.EndpointResponse{}) {
+        route.Handlers["DELETE"] = endpoint.DELETE.Function
+    }
+
+    return config.ModifyRoute(route.Id, *route, true)
 }

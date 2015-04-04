@@ -21,7 +21,7 @@ func PerformClientCall(handlerName string, rw http.ResponseWriter, req *http.Req
         return
     }
 
-    vars := createApiVars(route.Pattern, req, rw)
+    vars := createApiVars(route, req, rw)
 
     if vars == nil {
         return
@@ -51,7 +51,7 @@ func closeClient(client *rpc.Client) {
 
 // Create the specialized API variable filled with data that is
 // extracted from the HTTP request made to the server
-func createApiVars(requestURI string, r *http.Request, rw http.ResponseWriter) *ApiVar {
+func createApiVars(route *config.Route, r *http.Request, rw http.ResponseWriter) *ApiVar {
     err, statusCode := filter.CheckMethodAndParseContent(r)
     if err != nil {
         GiveApiMessage(statusCode, err.Error(), rw)
@@ -65,7 +65,7 @@ func createApiVars(requestURI string, r *http.Request, rw http.ResponseWriter) *
     }
 
     vars := &ApiVar{
-        RequestURI:           requestURI,
+        Route:                *route,
         RequestHeader:        r.Header,
         RequestForm:          r.Form,
         RequestContentLength: r.ContentLength,

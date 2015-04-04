@@ -5,6 +5,7 @@
 package api
 
 import (
+    "apiGO/config"
     "apiGO/filter"
     "net/http"
     "net/url"
@@ -16,7 +17,7 @@ type Api int
 // Data type containing important data from a HTTP
 // request that has been made to the server
 type ApiVar struct {
-    RequestURI           string
+    Route                config.Route
     RequestHeader        http.Header
     RequestForm          url.Values
     RequestContentLength int64
