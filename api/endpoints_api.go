@@ -4,22 +4,42 @@ import (
     "apiGO/config"
     "apiGO/dbmodels"
     "apiGO/filter"
+    "apiGO/interfaces"
     "apiGO/models"
     "apiGO/random"
     "apiGO/service"
+    "encoding/json"
     "net/http"
     "strings"
 )
 
 func (api *Api) GetEndpoint(vars *ApiVar, resp *ApiResponse) error {
-    resp.StatusCode = 204
-    resp.Message = []byte("")
+    endpoints, err := service.GetAllEndpoints()
+    if err != nil {
+        return internalServerError(resp, err.Error())
+    }
+
+    expandedEndpoints := make([]models.Endpoint, len(endpoints))
+    for i := 0; i < len(endpoints); i++ {
+        expandedEndpoints[i].Expand(endpoints[i])
+    }
+
+    endpointsJson, err := json.MarshalIndent(expandedEndpoints, interfaces.JsonPrefix, interfaces.JsonIndent)
+
+    if err != nil {
+        return internalServerError(resp, err.Error())
+    }
+
+    resp.StatusCode = http.StatusOK
+    resp.Message = endpointsJson
+
     return nil
 }
 
 func (api *Api) PostEndpoint(vars *ApiVar, resp *ApiResponse) error {
     basicEndpoint := &dbmodels.Endpoint{
         URLPath: strings.Join([]string{"/", random.RandomString(8)}, ""),
+        Enabled: true,
         GET:     dbmodels.NewEndpointResponse("GET"),
         POST:    dbmodels.NewEndpointResponse("POST"),
         PUT:     dbmodels.NewEndpointResponse("PUT"),

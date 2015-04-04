@@ -16,6 +16,7 @@ type Endpoint struct {
     Name           string                    `json:"name"`
     Description    string                    `json:"description"`
     Authentication dbmodels.EndpointAuth     `json:"authentication"`
+    Enabled        bool                      `json:"enabled"`
     GET            dbmodels.EndpointResponse `json:"get"`
     POST           dbmodels.EndpointResponse `json:"post"`
     PUT            dbmodels.EndpointResponse `json:"put"`
@@ -31,6 +32,8 @@ func (endpoint *Endpoint) Equal(otherEndpoint Endpoint) bool {
     case !endpoint.User.Equal(otherEndpoint.User):
         return false
     case endpoint.Name != otherEndpoint.Name:
+        return false
+    case endpoint.Enabled != otherEndpoint.Enabled:
         return false
     case !endpoint.Authentication.Equal(otherEndpoint.Authentication):
         return false
@@ -73,6 +76,7 @@ func (endpoint *Endpoint) Expand(baseEndpoint dbmodels.Endpoint) error {
     endpoint.Name = baseEndpoint.Name
     endpoint.Description = baseEndpoint.Description
     endpoint.Authentication = baseEndpoint.Authentication
+    endpoint.Enabled = baseEndpoint.Enabled
     endpoint.GET = baseEndpoint.GET
     endpoint.POST = baseEndpoint.POST
     endpoint.PUT = baseEndpoint.PUT
@@ -94,6 +98,7 @@ func (endpoint *Endpoint) Collapse() (*dbmodels.Endpoint, error) {
         URLPath:        endpoint.URLPath,
         UserId:         endpoint.User.Id,
         Name:           endpoint.Name,
+        Enabled:        endpoint.Enabled,
         Description:    endpoint.Description,
         Authentication: endpoint.Authentication,
         GET:            endpoint.GET,

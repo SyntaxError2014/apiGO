@@ -14,6 +14,7 @@ type Endpoint struct {
     Name           string           `bson:"name" json:"name"`
     Description    string           `bson:"description" json:"description"`
     Authentication EndpointAuth     `bson:"authentication" json:"authentication"`
+    Enabled        bool             `bson:"enabled" json:"enabled"`
     GET            EndpointResponse `bson:"get" json:"get"`
     POST           EndpointResponse `bson:"post" json:"post"`
     PUT            EndpointResponse `bson:"put" json:"put"`
@@ -29,6 +30,8 @@ func (endpoint *Endpoint) Equal(otherEndpoint Endpoint) bool {
     case endpoint.UserId != otherEndpoint.UserId:
         return false
     case endpoint.Name != otherEndpoint.Name:
+        return false
+    case endpoint.Enabled != otherEndpoint.Enabled:
         return false
     case !endpoint.Authentication.Equal(otherEndpoint.Authentication):
         return false
