@@ -14,7 +14,7 @@ type RequestHistory struct {
     Id  bson.ObjectId `json:"id"`
 
     Endpoint           dbmodels.Endpoint `json:"endpoint"`
-    Time               time.Time         `json:"time"`
+    RequestDate        time.Time         `json:"requestDate"`
     HTTPMethod         string            `json:"httpMethod"`
     Header             []byte            `json:"header"`
     Parameters         []byte            `json:"parameters"`
@@ -30,7 +30,7 @@ func (requestHistory *RequestHistory) Equal(otherRequestHistory RequestHistory) 
         return false
     case !requestHistory.Endpoint.Equal(otherRequestHistory.Endpoint):
         return false
-    case !requestHistory.Time.Equal(otherRequestHistory.Time):
+    case !requestHistory.RequestDate.Equal(otherRequestHistory.RequestDate):
         return false
     case bytes.Compare(requestHistory.Header, otherRequestHistory.Header) != 0:
         return false
@@ -71,7 +71,7 @@ func (requestHistory *RequestHistory) DeserializeJson(obj []byte) error {
 
 func (requestHistory *RequestHistory) Expand(baseRequestHistory dbmodels.RequestHistory) error {
     requestHistory.Id = baseRequestHistory.Id
-    requestHistory.Time = baseRequestHistory.Time
+    requestHistory.RequestDate = baseRequestHistory.RequestDate
     requestHistory.HTTPMethod = baseRequestHistory.HTTPMethod
     requestHistory.Header = baseRequestHistory.Header
     requestHistory.Parameters = baseRequestHistory.Parameters
@@ -94,7 +94,7 @@ func (requestHistory *RequestHistory) Collapse() (*dbmodels.RequestHistory, erro
     var collapsedRequestHistory = dbmodels.RequestHistory{
         Id:                 requestHistory.Id,
         EndpointId:         requestHistory.Endpoint.Id,
-        Time:               requestHistory.Time,
+        RequestDate:        requestHistory.RequestDate,
         HTTPMethod:         requestHistory.HTTPMethod,
         Header:             requestHistory.Header,
         Parameters:         requestHistory.Parameters,

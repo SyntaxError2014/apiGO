@@ -78,6 +78,7 @@ func (endpoint *Endpoint) Expand(baseEndpoint dbmodels.Endpoint) error {
     endpoint.Description = baseEndpoint.Description
     endpoint.Authentication = baseEndpoint.Authentication
     endpoint.Enabled = baseEndpoint.Enabled
+    endpoint.DateCreated = baseEndpoint.DateCreated
     endpoint.REST = baseEndpoint.REST
 
     user, err := service.GetUser(baseEndpoint.UserId)
@@ -97,6 +98,7 @@ func (endpoint *Endpoint) Collapse() (*dbmodels.Endpoint, error) {
         UserId:         endpoint.User.Id,
         Name:           endpoint.Name,
         Enabled:        endpoint.Enabled,
+        DateCreated:    endpoint.DateCreated,
         Description:    endpoint.Description,
         Authentication: endpoint.Authentication,
         REST:           endpoint.REST,
