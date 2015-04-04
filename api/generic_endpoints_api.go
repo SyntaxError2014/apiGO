@@ -46,6 +46,7 @@ func validateAndGetEndpoint(vars *ApiVar, resp *ApiResponse) *dbmodels.Endpoint 
         requestHistory.ResponseStatusCode = http.StatusServiceUnavailable
         requestHistory.ResponseMessage = []byte(msg)
         requestHistory.ResponseContentType = "text/plain"
+        service.CreateRequestHistory(requestHistory)
 
         serviceUnavailable(resp, msg)
         return nil
@@ -57,11 +58,16 @@ func validateAndGetEndpoint(vars *ApiVar, resp *ApiResponse) *dbmodels.Endpoint 
         requestHistory.ResponseStatusCode = http.StatusServiceUnavailable
         requestHistory.ResponseMessage = []byte(msg)
         requestHistory.ResponseContentType = "text/plain"
+        service.CreateRequestHistory(requestHistory)
 
         unauthorized(resp, msg)
         return nil
     }
 
+    return parseEndpoint(endpoint, requestHistory, vars, resp)
+}
+
+func parseEndpoint(endpoint *dbmodels.Endpoint, requestHistory *dbmodels.RequestHistory, vars *ApiVar, resp *ApiResponse) *dbmodels.Endpoint {
     endpointResponse := endpoint.REST[vars.RequestMethod]
 
     // Set the response

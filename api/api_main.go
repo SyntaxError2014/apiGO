@@ -57,7 +57,7 @@ func GiveApiResponse(statusCode int, message []byte, rw http.ResponseWriter) {
     }
 
     if statusCode == http.StatusUnauthorized {
-        rw.Header().Set("WWW-Authenticate", "Basic realm=\"private\"")
+        rw.Header().Add("WWW-Authenticate", "Basic realm=\"private\"")
     }
 
     if filter.CheckNotNull(message) {
