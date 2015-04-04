@@ -24,7 +24,7 @@ func ApiHandler(rw http.ResponseWriter, req *http.Request) {
     route := config.GetRouteByPattern(path)
 
     if route == nil {
-        GiveApiMessage(http.StatusNotFound, "There is no endpoint here, RUN Forrest, RUN!!!", rw)
+        GiveApiMessage(http.StatusNotFound, "There's nothing to see here\n\nMove along...\nMove along...", rw)
         return
     }
 
