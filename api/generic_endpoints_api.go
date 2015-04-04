@@ -64,6 +64,9 @@ func validateAndGetEndpoint(vars *ApiVar, resp *ApiResponse) *dbmodels.Endpoint 
         return nil
     }
 
+    // delay the response
+    time.Sleep(endpoint.REST[vars.RequestMethod].Delay * time.Millisecond)
+
     return parseEndpoint(endpoint, requestHistory, vars, resp)
 }
 
@@ -80,9 +83,6 @@ func parseEndpoint(endpoint *dbmodels.Endpoint, requestHistory *dbmodels.Request
     requestHistory.ResponseMessage = resp.Message
     requestHistory.ResponseContentType = resp.ContentType
     service.CreateRequestHistory(requestHistory)
-
-    // delay the response
-    time.Sleep(endpointResponse.Delay * time.Millisecond)
 
     return endpoint
 }

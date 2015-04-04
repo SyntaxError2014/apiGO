@@ -31,21 +31,21 @@ func PerformClientCall(handlerName string, rw http.ResponseWriter, req *http.Req
 
     err = client.Call(handlerName, vars, resp)
 
-    if len(resp.ErrorMessage) > 0 {
-        log.Println(req.Method, route.Pattern, resp.StatusCode, resp.ErrorMessage)
-    } else {
-        log.Println(req.Method, route.Pattern, resp.StatusCode, string(resp.Message))
-    }
+    // Log requests and an eventual error messages
+    log.Println(req.Method, route.Pattern, resp.StatusCode, resp.ErrorMessage)
 
+    // Treat RPC call error separately
     if err != nil {
         GiveApiMessage(resp.StatusCode, err.Error(), rw)
         return
     }
 
+    // If a content type is specified, write it to the response header
     if len(resp.ContentType) > 0 {
         rw.Header().Add("Content-type", resp.ContentType)
     }
 
+    // Give appripriate http response depending on the status of the processed request
     if resp.ErrorMessage != "" {
         GiveApiMessage(resp.StatusCode, resp.ErrorMessage, rw)
     } else {
