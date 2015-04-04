@@ -1,17 +1,15 @@
 package dbmodels
 
-import (
-    "gopkg.in/mgo.v2/bson"
-)
+import ()
 
 type EndpointAuth struct {
-    UserId   bson.ObjectId `bson:"userId,omitempty" json:"userId"`
-    Password string        `bson:"password" json:"password"`
+    Username string `bson:"username" json:"username"`
+    Password string `bson:"password" json:"password"`
 }
 
 func (endpointAuth EndpointAuth) Equal(otherEndpointAuth EndpointAuth) bool {
     switch {
-    case endpointAuth.UserId != otherEndpointAuth.UserId:
+    case endpointAuth.Username != otherEndpointAuth.Username:
         return false
     case endpointAuth.Password != otherEndpointAuth.Password:
         return false

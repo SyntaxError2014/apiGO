@@ -51,14 +51,14 @@ func closeClient(client *rpc.Client) {
 
 // Create the specialized API variable filled with data that is
 // extracted from the HTTP request made to the server
-func createApiVars(route *config.Route, r *http.Request, rw http.ResponseWriter) *ApiVar {
-    err, statusCode := filter.CheckMethodAndParseContent(r)
+func createApiVars(route *config.Route, req *http.Request, rw http.ResponseWriter) *ApiVar {
+    err, statusCode := filter.CheckMethodAndParseContent(req)
     if err != nil {
         GiveApiMessage(statusCode, err.Error(), rw)
         return nil
     }
 
-    body, err := convertBodyToReadableFormat(r.Body)
+    body, err := convertBodyToReadableFormat(req.Body)
     if err != nil {
         GiveApiMessage(http.StatusBadRequest, err.Error(), rw)
         return nil
@@ -66,11 +66,12 @@ func createApiVars(route *config.Route, r *http.Request, rw http.ResponseWriter)
 
     vars := &ApiVar{
         Route:                *route,
-        RequestMethod:        r.Method,
-        RequestHeader:        r.Header,
-        RequestForm:          r.Form,
-        RequestContentLength: r.ContentLength,
+        RequestMethod:        req.Method,
+        RequestHeader:        req.Header,
+        RequestForm:          req.Form,
+        RequestContentLength: req.ContentLength,
         RequestBody:          body,
+        BasicAuth:            parseBasicAuthData(req),
     }
 
     return vars
@@ -82,4 +83,17 @@ func convertBodyToReadableFormat(data io.ReadCloser) ([]byte, error) {
     body, err := ioutil.ReadAll(data)
 
     return body, err
+}
+
+// Prepare the Basic Authentication details into a data transport type
+func parseBasicAuthData(req *http.Request) BasicAuthentication {
+    username, password, ok := req.BasicAuth()
+
+    basicAuth := BasicAuthentication{
+        OK:       ok,
+        Username: username,
+        Password: password,
+    }
+
+    return basicAuth
 }
