@@ -20,9 +20,9 @@ type RequestHistory struct {
     Header              map[string][]string `json:"header"`
     Parameters          url.Values          `json:"parameters"`
     Body                []byte              `json:"body"`
-    ResponseStatusCode  int                 `bson:"responseStatusCode" json:"responseStatusCode"`
-    ResponseMessage     []byte              `bson:"responseMessage" json:"responseMessage"`
-    ResponseContentType string              `bson:"responseContentType" json:"responseContentType"`
+    ResponseStatusCode  int                 `json:"responseStatusCode"`
+    ResponseMessage     []byte              `json:"responseMessage"`
+    ResponseContentType string              `json:"responseContentType"`
 }
 
 func (requestHistory *RequestHistory) Equal(otherRequestHistory RequestHistory) bool {

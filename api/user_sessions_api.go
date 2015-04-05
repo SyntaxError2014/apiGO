@@ -1,6 +1,7 @@
 package api
 
 import (
+    "apiGO/dbmodels"
     "apiGO/filter"
     "apiGO/models"
     "apiGO/service"
@@ -8,25 +9,10 @@ import (
 )
 
 func (api *Api) GetUserSession(vars *ApiVar, resp *ApiResponse) error {
-    token, err, found := filter.GetStringValueFromParams("token", vars.RequestForm)
+    user, err := fetchUserUsingAuthToken(vars, resp)
 
-    if !found {
-        return badRequest(resp, "Session token has not been specified")
-    }
-
-    if err != nil {
-        return badRequest(resp, err.Error())
-    }
-
-    userSession, err := service.GetUserSessionByToken(token)
-    if err != nil || userSession == nil {
-        return notFound(resp, "There is no session with the specified token")
-    }
-
-    user, err := service.GetUser(userSession.UserId)
     if err != nil || user == nil {
-        service.DeleteUserSession(userSession.Id)
-        return notFound(resp, "The user with the current session no longer exists")
+        return nil
     }
 
     expandedUser := &models.User{}
@@ -78,4 +64,29 @@ func (api *Api) PostUserSession(vars *ApiVar, resp *ApiResponse) error {
 
 func (api *Api) DeleteUserSession(vars *ApiVar, resp *ApiResponse) error {
     return nil
+}
+
+func fetchUserUsingAuthToken(vars *ApiVar, resp *ApiResponse) (*dbmodels.User, error) {
+    token, err, found := filter.GetStringValueFromParams("token", vars.RequestForm)
+
+    if !found {
+        return nil, badRequest(resp, "Session token has not been specified")
+    }
+
+    if err != nil {
+        return nil, badRequest(resp, err.Error())
+    }
+
+    userSession, err := service.GetUserSessionByToken(token)
+    if err != nil || userSession == nil {
+        return nil, notFound(resp, "There is no session with the specified token")
+    }
+
+    user, err := service.GetUser(userSession.UserId)
+    if err != nil || user == nil {
+        service.DeleteUserSession(userSession.Id)
+        return nil, notFound(resp, "The user with the current session no longer exists")
+    }
+
+    return user, nil
 }

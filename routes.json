@@ -24,5 +24,12 @@
       "POST": "Api.PostEndpoint",
       "PUT": "Api.PutEndpoint"
     }
+  },
+  {
+    "id": "RequestsHistoryRoute",
+    "pattern": "/history",
+    "handlers": {
+      "GET": "Api.GetRequestsHistory"
+    }
   }
 ]
