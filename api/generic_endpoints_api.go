@@ -2,6 +2,7 @@ package api
 
 import (
     "apiGO/dbmodels"
+    py "apiGO/python_integration"
     "apiGO/service"
     "net/http"
     "time"
@@ -14,7 +15,21 @@ func (api *Api) GenericGET(vars *ApiVar, resp *ApiResponse) error {
 }
 
 func (api *Api) GenericPOST(vars *ApiVar, resp *ApiResponse) error {
-    validateAndGetEndpoint(vars, resp)
+    endpoint := validateAndGetEndpoint(vars, resp)
+    endpointResponse := endpoint.REST[vars.RequestMethod]
+
+    if len(endpointResponse.SourceCode) > 0 {
+        output, err := py.ExecuteCommand(endpointResponse.SourceCode, vars.RequestForm)
+
+        if err != nil {
+            return internalServerError(resp, err.Error())
+        }
+
+        statusCode, responseMessage := py.ParseOutput(output)
+
+        resp.StatusCode = statusCode
+        resp.Message = []byte(responseMessage)
+    }
 
     return nil
 }

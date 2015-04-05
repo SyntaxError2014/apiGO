@@ -15,7 +15,7 @@ func ExecuteCommand(codeBody string, parameters url.Values) ([]byte, error) {
     params = append(params, codeBody)
 
     for _, p := range parameters {
-        params = append(params, p)
+        params = append(params, strings.Join(p, " "))
     }
 
     return exec.Command(head, params...).Output()
