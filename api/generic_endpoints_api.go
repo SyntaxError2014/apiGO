@@ -9,20 +9,46 @@ import (
 )
 
 func (api *Api) GenericGET(vars *ApiVar, resp *ApiResponse) error {
-    validateAndGetEndpoint(vars, resp)
+    endpoint := validateAndGetEndpoint(vars, resp)
+
+    executeSourceCode(endpoint, vars, resp)
 
     return nil
 }
 
 func (api *Api) GenericPOST(vars *ApiVar, resp *ApiResponse) error {
     endpoint := validateAndGetEndpoint(vars, resp)
+
+    executeSourceCode(endpoint, vars, resp)
+
+    return nil
+}
+
+func (api *Api) GenericPUT(vars *ApiVar, resp *ApiResponse) error {
+    endpoint := validateAndGetEndpoint(vars, resp)
+
+    executeSourceCode(endpoint, vars, resp)
+
+    return nil
+}
+
+func (api *Api) GenericDELETE(vars *ApiVar, resp *ApiResponse) error {
+    endpoint := validateAndGetEndpoint(vars, resp)
+
+    executeSourceCode(endpoint, vars, resp)
+
+    return nil
+}
+
+func executeSourceCode(endpoint *dbmodels.Endpoint, vars *ApiVar, resp *ApiResponse) bool {
     endpointResponse := endpoint.REST[vars.RequestMethod]
 
     if len(endpointResponse.SourceCode) > 0 {
         output, err := py.ExecuteCommand(endpointResponse.SourceCode, vars.RequestForm)
 
         if err != nil {
-            return internalServerError(resp, err.Error())
+            internalServerError(resp, err.Error())
+            return false
         }
 
         statusCode, responseMessage := py.ParseOutput(output)
@@ -31,19 +57,7 @@ func (api *Api) GenericPOST(vars *ApiVar, resp *ApiResponse) error {
         resp.Message = []byte(responseMessage)
     }
 
-    return nil
-}
-
-func (api *Api) GenericPUT(vars *ApiVar, resp *ApiResponse) error {
-    validateAndGetEndpoint(vars, resp)
-
-    return nil
-}
-
-func (api *Api) GenericDELETE(vars *ApiVar, resp *ApiResponse) error {
-    validateAndGetEndpoint(vars, resp)
-
-    return nil
+    return true
 }
 
 func validateAndGetEndpoint(vars *ApiVar, resp *ApiResponse) *dbmodels.Endpoint {
