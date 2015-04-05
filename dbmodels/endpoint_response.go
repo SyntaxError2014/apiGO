@@ -9,6 +9,7 @@ type EndpointResponse struct {
     StatusCode  int           `bson:"statusCode" json:"statusCode"`
     Delay       time.Duration `bson:"delay" json:"delay"`
     Response    string        `bson:"response" json:"response"`
+    SourceCode  string        `bson:"sourceCode" json:"sourceCode"`
     ContentType string        `bson:"contentType" json:"contentType"`
 }
 
@@ -19,6 +20,8 @@ func (endpointResponse EndpointResponse) Equal(otherEndpointResponse EndpointRes
     case endpointResponse.Delay != otherEndpointResponse.Delay:
         return false
     case endpointResponse.Response != otherEndpointResponse.Response:
+        return false
+    case endpointResponse.SourceCode != otherEndpointResponse.SourceCode:
         return false
     case endpointResponse.ContentType != otherEndpointResponse.ContentType:
         return false
