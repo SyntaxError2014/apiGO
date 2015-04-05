@@ -11,7 +11,9 @@ import (
 func (api *Api) GenericGET(vars *ApiVar, resp *ApiResponse) error {
     endpoint := validateAndGetEndpoint(vars, resp)
 
-    executeSourceCode(endpoint, vars, resp)
+    if endpoint != nil {
+        // executeSourceCode(endpoint, vars, resp)
+    }
 
     return nil
 }
@@ -19,7 +21,9 @@ func (api *Api) GenericGET(vars *ApiVar, resp *ApiResponse) error {
 func (api *Api) GenericPOST(vars *ApiVar, resp *ApiResponse) error {
     endpoint := validateAndGetEndpoint(vars, resp)
 
-    executeSourceCode(endpoint, vars, resp)
+    if endpoint != nil {
+        // executeSourceCode(endpoint, vars, resp)
+    }
 
     return nil
 }
@@ -27,7 +31,9 @@ func (api *Api) GenericPOST(vars *ApiVar, resp *ApiResponse) error {
 func (api *Api) GenericPUT(vars *ApiVar, resp *ApiResponse) error {
     endpoint := validateAndGetEndpoint(vars, resp)
 
-    executeSourceCode(endpoint, vars, resp)
+    if endpoint != nil {
+        // executeSourceCode(endpoint, vars, resp)
+    }
 
     return nil
 }
@@ -35,7 +41,9 @@ func (api *Api) GenericPUT(vars *ApiVar, resp *ApiResponse) error {
 func (api *Api) GenericDELETE(vars *ApiVar, resp *ApiResponse) error {
     endpoint := validateAndGetEndpoint(vars, resp)
 
-    executeSourceCode(endpoint, vars, resp)
+    if endpoint != nil {
+        // executeSourceCode(endpoint, vars, resp)
+    }
 
     return nil
 }
