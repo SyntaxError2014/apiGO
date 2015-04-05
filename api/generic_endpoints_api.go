@@ -2,33 +2,70 @@ package api
 
 import (
     "apiGO/dbmodels"
+    py "apiGO/python_integration"
     "apiGO/service"
     "net/http"
     "time"
 )
 
 func (api *Api) GenericGET(vars *ApiVar, resp *ApiResponse) error {
-    validateAndGetEndpoint(vars, resp)
+    endpoint := validateAndGetEndpoint(vars, resp)
+
+    if endpoint != nil {
+        // executeSourceCode(endpoint, vars, resp)
+    }
 
     return nil
 }
 
 func (api *Api) GenericPOST(vars *ApiVar, resp *ApiResponse) error {
-    validateAndGetEndpoint(vars, resp)
+    endpoint := validateAndGetEndpoint(vars, resp)
+
+    if endpoint != nil {
+        // executeSourceCode(endpoint, vars, resp)
+    }
 
     return nil
 }
 
 func (api *Api) GenericPUT(vars *ApiVar, resp *ApiResponse) error {
-    validateAndGetEndpoint(vars, resp)
+    endpoint := validateAndGetEndpoint(vars, resp)
+
+    if endpoint != nil {
+        // executeSourceCode(endpoint, vars, resp)
+    }
 
     return nil
 }
 
 func (api *Api) GenericDELETE(vars *ApiVar, resp *ApiResponse) error {
-    validateAndGetEndpoint(vars, resp)
+    endpoint := validateAndGetEndpoint(vars, resp)
+
+    if endpoint != nil {
+        // executeSourceCode(endpoint, vars, resp)
+    }
 
     return nil
+}
+
+func executeSourceCode(endpoint *dbmodels.Endpoint, vars *ApiVar, resp *ApiResponse) bool {
+    endpointResponse := endpoint.REST[vars.RequestMethod]
+
+    if len(endpointResponse.SourceCode) > 0 {
+        output, err := py.ExecuteCommand(endpointResponse.SourceCode, vars.RequestForm)
+
+        if err != nil {
+            internalServerError(resp, err.Error())
+            return false
+        }
+
+        statusCode, responseMessage := py.ParseOutput(output)
+
+        resp.StatusCode = statusCode
+        resp.Message = []byte(responseMessage)
+    }
+
+    return true
 }
 
 func validateAndGetEndpoint(vars *ApiVar, resp *ApiResponse) *dbmodels.Endpoint {
