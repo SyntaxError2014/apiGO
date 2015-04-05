@@ -12,24 +12,26 @@ import (
 
 func (api *Api) GetRequestsHistory(vars *ApiVar, resp *ApiResponse) error {
     user, err := fetchUserUsingAuthToken(vars, resp)
-    if user == nil {
+    if err != nil || user == nil {
         return nil
     }
 
     endpoint, err := fetchEndpointUsingEndpointPath(vars, resp)
-    if endpoint == nil {
+    if err != nil || endpoint == nil {
         return nil
     }
 
     requestsHistory, err := service.GetEntireRequestHistoryForEndpoint(endpoint.Id)
-    if err != nil {
-        internalServerError(resp, err.Error())
+    if err != nil || len(requestsHistory) == 0 {
+        resp.StatusCode = http.StatusNoContent
+
+        return nil
     }
 
     historyArray := expandRequestsHistoryArray(requestsHistory)
 
     historyJson, err := json.MarshalIndent(historyArray, interfaces.JsonPrefix, interfaces.JsonIndent)
-    if err != nil {
+    if err != nil || len(historyJson) == 0 {
         return internalServerError(resp, err.Error())
     }
 
