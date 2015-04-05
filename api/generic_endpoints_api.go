@@ -44,7 +44,7 @@ func validateAndGetEndpoint(vars *ApiVar, resp *ApiResponse) *dbmodels.Endpoint 
         msg := "This endpoint is not enabled"
 
         requestHistory.ResponseStatusCode = http.StatusServiceUnavailable
-        requestHistory.ResponseMessage = []byte(msg)
+        requestHistory.ResponseMessage = msg
         requestHistory.ResponseContentType = "text/plain"
         service.CreateRequestHistory(requestHistory)
 
@@ -56,7 +56,7 @@ func validateAndGetEndpoint(vars *ApiVar, resp *ApiResponse) *dbmodels.Endpoint 
         msg := "Basic authentication failed!"
 
         requestHistory.ResponseStatusCode = http.StatusServiceUnavailable
-        requestHistory.ResponseMessage = []byte(msg)
+        requestHistory.ResponseMessage = msg
         requestHistory.ResponseContentType = "text/plain"
         service.CreateRequestHistory(requestHistory)
 
@@ -80,7 +80,7 @@ func parseEndpoint(endpoint *dbmodels.Endpoint, requestHistory *dbmodels.Request
 
     // Set the response history and add it to the database
     requestHistory.ResponseStatusCode = resp.StatusCode
-    requestHistory.ResponseMessage = resp.Message
+    requestHistory.ResponseMessage = string(resp.Message)
     requestHistory.ResponseContentType = resp.ContentType
     service.CreateRequestHistory(requestHistory)
 
@@ -114,7 +114,7 @@ func generateAccessHistory(endpoint *dbmodels.Endpoint, vars *ApiVar) *dbmodels.
         HTTPMethod:          vars.RequestMethod,
         Header:              vars.RequestHeader,
         Parameters:          vars.RequestForm,
-        Body:                vars.RequestBody,
+        Body:                string(vars.RequestBody),
         ResponseContentType: vars.RequestHeader.Get("Content-Type"),
     }
 

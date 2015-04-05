@@ -16,7 +16,7 @@ func (api *Api) GetRequestsHistory(vars *ApiVar, resp *ApiResponse) error {
         return nil
     }
 
-    endpoint, err := fetchEndpointUsingEndpointId(vars, resp)
+    endpoint, err := fetchEndpointUsingEndpointPath(vars, resp)
     if endpoint == nil {
         return nil
     }
@@ -39,18 +39,18 @@ func (api *Api) GetRequestsHistory(vars *ApiVar, resp *ApiResponse) error {
     return nil
 }
 
-func fetchEndpointUsingEndpointId(vars *ApiVar, resp *ApiResponse) (*dbmodels.Endpoint, error) {
-    endpointId, endpointIdError, endpointIdFound := filter.GetIdValueFromParams("endpointId", vars.RequestForm)
+func fetchEndpointUsingEndpointPath(vars *ApiVar, resp *ApiResponse) (*dbmodels.Endpoint, error) {
+    endpointPath, endpointPathError, endpointPathFound := filter.GetStringValueFromParams("endpointPath", vars.RequestForm)
 
-    if !endpointIdFound {
+    if !endpointPathFound {
         return nil, badRequest(resp, "No endpoint id was specified")
     }
 
-    if endpointIdError != nil {
-        return nil, badRequest(resp, endpointIdError.Error())
+    if endpointPathError != nil {
+        return nil, badRequest(resp, endpointPathError.Error())
     }
 
-    return service.GetEndpoint(endpointId)
+    return service.GetEndpointByURLPath(endpointPath)
 }
 
 func expandRequestsHistoryArray(reqHistArr []dbmodels.RequestHistory) []models.RequestHistory {
