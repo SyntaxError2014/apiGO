@@ -4,7 +4,6 @@ import (
     "apiGO/dbmodels"
     "apiGO/interfaces"
     "apiGO/service"
-    "bytes"
     "encoding/json"
     "gopkg.in/mgo.v2/bson"
     "net/url"
@@ -19,10 +18,10 @@ type RequestHistory struct {
     HTTPMethod          string              `json:"httpMethod"`
     Header              map[string][]string `json:"header"`
     Parameters          url.Values          `json:"parameters"`
-    Body                []byte              `json:"body"`
-    ResponseStatusCode  int                 `bson:"responseStatusCode" json:"responseStatusCode"`
-    ResponseMessage     []byte              `bson:"responseMessage" json:"responseMessage"`
-    ResponseContentType string              `bson:"responseContentType" json:"responseContentType"`
+    Body                string              `json:"body"`
+    ResponseStatusCode  int                 `json:"responseStatusCode"`
+    ResponseMessage     string              `json:"responseMessage"`
+    ResponseContentType string              `json:"responseContentType"`
 }
 
 func (requestHistory *RequestHistory) Equal(otherRequestHistory RequestHistory) bool {
@@ -33,11 +32,11 @@ func (requestHistory *RequestHistory) Equal(otherRequestHistory RequestHistory) 
         return false
     case !requestHistory.RequestDate.Equal(otherRequestHistory.RequestDate):
         return false
-    case bytes.Compare(requestHistory.Body, otherRequestHistory.Body) != 0:
+    case requestHistory.Body != otherRequestHistory.Body:
         return false
     case requestHistory.ResponseStatusCode != otherRequestHistory.ResponseStatusCode:
         return false
-    case bytes.Compare(requestHistory.ResponseMessage, otherRequestHistory.ResponseMessage) != 0:
+    case requestHistory.ResponseMessage != otherRequestHistory.ResponseMessage:
         return false
     case requestHistory.ResponseContentType != otherRequestHistory.ResponseContentType:
         return false

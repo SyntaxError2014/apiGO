@@ -39,13 +39,19 @@ func GetIntValueFromParams(paramName string, reqForm url.Values) (int, error, bo
 // Gets a parameter from the HTTP request with the specified name and tries to
 // parse it as an bson.ObjectId value, then return it
 func GetIdFromParams(reqForm url.Values) (bson.ObjectId, error, bool) {
-    id := reqForm.Get("id")
+    return GetIdValueFromParams("id", reqForm)
+}
+
+func GetIdValueFromParams(paramName string, reqForm url.Values) (bson.ObjectId, error, bool) {
+    id := reqForm.Get(paramName)
     if id == "" {
-        return "", errors.New("The id parameter was not specified"), false
+        errMsg := []string{"The", paramName, "parameter was not specified"}
+        return "", errors.New(strings.Join(errMsg, " ")), false
     }
 
     if !bson.IsObjectIdHex(id) {
-        return "", errors.New("The id parameter is not a valid bson.ObjectId"), true
+        errMsg := []string{"The", paramName, "parameter is not a valid bson.ObjectId"}
+        return "", errors.New(strings.Join(errMsg, " ")), true
     }
 
     return bson.ObjectIdHex(id), nil, true
